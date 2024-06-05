@@ -4,10 +4,10 @@
 @tailwind variants;
 
 ::selection {
-  @apply bg-zinc-700 text-zinc-200;
+  @apply bg-zinc-900 text-zinc-200;
 }
 input {
-  @apply caret-pink-500 outline-none;
+  @apply caret-accent bg-[unset] outline-none;
 }
 html {
   &::-webkit-scrollbar {
@@ -36,48 +36,91 @@ input,
 textarea,
 button,
 a {
-  @apply outline outline-0 outline-pink-500 focus-visible:outline-2 focus-visible:duration-100;
+  @apply outline-accent outline outline-0 outline-offset-2 focus-visible:outline-[3px];
 }
 code {
   @apply font-[unset];
 }
 [data-radix-popper-content-wrapper] > * {
-  &[data-side="top"] {
-    animation: smoothAppearTop 0.2s ease-out forwards;
-    @keyframes smoothAppearTop {
-      from {
-        opacity: 0;
-        translate: 0;
+  &[data-state='open'] {
+    &[data-side='top'] {
+      animation: appearTop 0.2s ease-out forwards;
+      @keyframes appearTop {
+        from {
+          opacity: 0;
+          translate: 0;
+        }
+        to {
+          opacity: 1;
+          translate: 0 -0.25rem;
+        }
       }
-      to {
-        opacity: 1;
-        translate: 0 -0.25rem;
+    }
+    &[data-side='bottom'] {
+      animation: appearBottom 0.2s ease-out forwards;
+      @keyframes appearBottom {
+        from {
+          opacity: 0;
+          translate: 0 -0.25rem;
+        }
+        to {
+          opacity: 1;
+          translate: 0;
+        }
+      }
+    }
+    &[data-side='right'] {
+      animation: appearRight 0.2s ease-out forwards;
+      @keyframes appearRight {
+        from {
+          opacity: 0;
+          translate: 0;
+        }
+        to {
+          opacity: 1;
+          translate: 0.25rem 0;
+        }
       }
     }
   }
-  &[data-side="bottom"] {
-    animation: smoothAppearBottom 0.2s ease-out forwards;
-    @keyframes smoothAppearBottom {
-      from {
-        opacity: 0;
-        translate: 0 -0.25rem;
-      }
-      to {
-        opacity: 1;
-        translate: 0;
+  &[data-state='closed'] {
+    &[data-side='top'] {
+      animation: disappearTop 0.1s ease-out forwards;
+      @keyframes disappearTop {
+        from {
+          opacity: 1;
+          translate: 0 -0.25rem;
+        }
+        to {
+          opacity: 0;
+          translate: 0;
+        }
       }
     }
-  }
-  &[data-side="right"] {
-    animation: smoothAppearRight 0.2s ease-out forwards;
-    @keyframes smoothAppearRight {
-      from {
-        opacity: 0;
-        translate: 0;
+    &[data-side='bottom'] {
+      animation: disappearBottom 0.1s ease-out forwards;
+      @keyframes disappearBottom {
+        from {
+          opacity: 1;
+          translate: 0;
+        }
+        to {
+          opacity: 0;
+          translate: 0 -0.25rem;
+        }
       }
-      to {
-        opacity: 1;
-        translate: 0.25rem 0;
+    }
+    &[data-side='right'] {
+      animation: disappearRight 0.1s ease-out forwards;
+      @keyframes disappearRight {
+        from {
+          opacity: 1;
+          translate: 0.25rem 0;
+        }
+        to {
+          opacity: 0;
+          translate: 0;
+        }
       }
     }
   }

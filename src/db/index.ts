@@ -1,21 +1,16 @@
-import * as answers from '@/db/schema/answers'
-import * as questions from '@/db/schema/questions'
+import { dbCredentials } from '#/drizzle.config'
+import * as courses from '@/db/schema/courses'
+import * as studentsCourses from '@/db/schema/courses-students'
 import * as users from '@/db/schema/users'
-import * as usersQuestionsLikes from '@/db/schema/users-questions-likes'
-import * as usersQuestionsViews from '@/db/schema/users-questions-views'
-import { createClient } from '@libsql/client'
-import { drizzle } from 'drizzle-orm/libsql'
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
 
-export const client = createClient({
-  url: 'file:./local.db',
-})
+const client = new Pool(dbCredentials)
 
 export const db = drizzle(client, {
   schema: {
     ...users,
-    ...questions,
-    ...answers,
-    ...usersQuestionsLikes,
-    ...usersQuestionsViews,
+    ...courses,
+    ...studentsCourses,
   },
 })
