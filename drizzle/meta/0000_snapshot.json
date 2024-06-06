@@ -1,9 +1,66 @@
 {
-  "id": "af81fc79-e898-46a9-89d0-798cb7b7fa76",
+  "id": "22e6621a-866a-414b-95a6-874846682d31",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.courses_works": {
+      "name": "courses_works",
+      "schema": "",
+      "columns": {
+        "course_id": {
+          "name": "course_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "work_id": {
+          "name": "work_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "courses_works_course_id_courses_id_fk": {
+          "name": "courses_works_course_id_courses_id_fk",
+          "tableFrom": "courses_works",
+          "tableTo": "courses",
+          "columnsFrom": [
+            "course_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "courses_works_work_id_works_id_fk": {
+          "name": "courses_works_work_id_works_id_fk",
+          "tableFrom": "courses_works",
+          "tableTo": "works",
+          "columnsFrom": [
+            "work_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "courses_works_course_id_work_id_pk": {
+          "name": "courses_works_course_id_work_id_pk",
+          "columns": [
+            "course_id",
+            "work_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "public.courses": {
       "name": "courses",
       "schema": "",

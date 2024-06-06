@@ -1,3 +1,9 @@
+CREATE TABLE IF NOT EXISTS "courses_works" (
+	"course_id" integer NOT NULL,
+	"work_id" integer NOT NULL,
+	CONSTRAINT "courses_works_course_id_work_id_pk" PRIMARY KEY("course_id","work_id")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "courses" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
@@ -72,6 +78,18 @@ CREATE TABLE IF NOT EXISTS "tasks_bases" (
 	"tutor_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "courses_works" ADD CONSTRAINT "courses_works_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "courses_works" ADD CONSTRAINT "courses_works_work_id_works_id_fk" FOREIGN KEY ("work_id") REFERENCES "public"."works"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "courses" ADD CONSTRAINT "courses_tutor_id_users_id_fk" FOREIGN KEY ("tutor_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;

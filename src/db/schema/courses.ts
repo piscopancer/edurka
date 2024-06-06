@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm'
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { coursesWorksTable } from './courses-works'
 import { usersTable } from './users'
 import { usersCoursesParticipationTable } from './users-courses-participation'
 
@@ -22,4 +23,5 @@ export const coursesRelations = relations(coursesTable, ({ one, many }) => ({
     fields: [coursesTable.tutorId],
     references: [usersTable.id],
   }),
+  works: many(coursesWorksTable),
 }))

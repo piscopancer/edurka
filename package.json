@@ -7,6 +7,7 @@
     "dbsl": "dotenv -e .env.development.local -- bun run drizzle-kit studio",
     "dbsp": "dotenv -e .env.production.local -- bun run drizzle-kit studio",
     "dbg": "bun run drizzle-kit generate",
+    "dbd": "bun run drizzle-kit drop",
     "dbml": "dotenv -e .env.development.local -- bun run drizzle-kit migrate",
     "dbmp": "dotenv -e .env.production.local -- bun run drizzle-kit migrate",
     "build": "next build",

@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm'
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { coursesWorksTable } from './courses-works'
 import { usersTable } from './users'
 import { worksTasksTable } from './works-tasks'
 
@@ -16,10 +17,11 @@ export const worksTable = pgTable('works', {
 export type SelectCourse = typeof worksTable.$inferSelect
 export type InsertCourse = typeof worksTable.$inferInsert
 
-export const worksUsersRelations = relations(worksTable, ({ one, many }) => ({
+export const worksRelations = relations(worksTable, ({ one, many }) => ({
   tutor: one(usersTable, {
     fields: [worksTable.tutorId],
     references: [usersTable.id],
   }),
   tasks: many(worksTasksTable),
+  coursesBelongsTo: many(coursesWorksTable),
 }))

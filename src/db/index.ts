@@ -1,5 +1,6 @@
 import { dbCredentials } from '#/drizzle.config'
 import * as courses from '@/db/schema/courses'
+import * as coursesWorks from '@/db/schema/courses-works'
 import * as agreeTasks from '@/db/schema/tasks/agree-tasks'
 import * as selectOneTasks from '@/db/schema/tasks/select-one-tasks'
 import * as tasksBases from '@/db/schema/tasks/tasks-bases'
@@ -15,6 +16,7 @@ export const db = drizzle(client, {
   schema: {
     ...users,
     ...courses,
+    ...coursesWorks,
     ...studentsCourses,
     ...works,
     ...tasksBases,
