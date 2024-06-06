@@ -10,7 +10,7 @@ export const dbCredentials = {
 } as const
 
 export default defineConfig({
-  schema: './src/db/schema',
+  schema: ['./src/db/schema', './src/db/schema/tasks'],
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials,

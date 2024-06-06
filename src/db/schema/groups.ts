@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { groupsStudentsTable } from './groups-students'
 import { usersTable } from './users'
+import { usersGroupsParticipationTable } from './users-groups-participation'
 
 export const groupsTable = pgTable('groups', {
   id: serial('id').primaryKey(),
@@ -16,7 +16,7 @@ export type SelectGroup = typeof groupsTable.$inferSelect
 export type InsertGroup = typeof groupsTable.$inferInsert
 
 export const groupsUsersRelations = relations(groupsTable, ({ one, many }) => ({
-  students: many(groupsStudentsTable),
+  students: many(usersGroupsParticipationTable),
   tutor: one(usersTable, {
     fields: [groupsTable.tutorId],
     references: [usersTable.id],

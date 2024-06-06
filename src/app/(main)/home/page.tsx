@@ -12,10 +12,10 @@ export default async function Home() {
     return
   }
 
-  const courses = await db.query.coursesStudentsTable
+  const courses = await db.query.usersCoursesParticipationTable
     .findMany({
       columns: {},
-      where: (t, { eq }) => eq(t.studentId, authUser.id),
+      where: (t, { eq }) => eq(t.participantId, authUser.id),
       with: {
         course: true,
       },

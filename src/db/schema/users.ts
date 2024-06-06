@@ -1,7 +1,9 @@
 import { relations } from 'drizzle-orm'
 import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { coursesStudentsTable } from './courses-students'
-import { groupsStudentsTable } from './groups-students'
+import { coursesTable } from './courses'
+import { tasksBasesTable } from './tasks/tasks-bases'
+import { usersCoursesParticipationTable } from './users-courses-participation'
+import { usersGroupsParticipationTable } from './users-groups-participation'
 
 export const usersTable = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -21,6 +23,8 @@ export type SelectUser = typeof usersTable.$inferSelect
 export type InsertUser = typeof usersTable.$inferInsert
 
 export const usersRelations = relations(usersTable, ({ many }) => ({
-  groups: many(groupsStudentsTable),
-  courses: many(coursesStudentsTable),
+  createdGroups: many(usersGroupsParticipationTable),
+  participatedCourses: many(usersCoursesParticipationTable),
+  createdCourses: many(coursesTable),
+  createdTasks: many(tasksBasesTable),
 }))

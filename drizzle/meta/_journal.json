@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1717603267023,
-      "tag": "0000_lonely_blue_marvel",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1717603315847,
-      "tag": "0001_next_silk_fever",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1717603345471,
-      "tag": "0002_married_steve_rogers",
+      "when": 1717679882105,
+      "tag": "0000_lyrical_lester",
       "breakpoints": true
     }
   ]
