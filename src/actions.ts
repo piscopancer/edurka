@@ -1,43 +1,45 @@
 'use server'
 
+import { User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { db } from '../prisma'
 import { Token } from './auth'
-import { db } from './db'
-import { InsertUser, SelectUser, usersTable } from './db/schema/users'
+import { CreateUser } from './user'
 import { route } from './utils'
 
-async function _signUpUser(newUser: InsertUser) {
+async function _signUpUser(candidate: CreateUser) {
   const salt = bcrypt.genSaltSync(5)
-  const hashedPassword = bcrypt.hashSync(newUser.password, salt)
-  // db
-  newUser.password = hashedPassword
-  const dbUser = await db.query.usersTable.findFirst({
-    where: (t, { eq, or }) => or(eq(t.email, newUser.email), eq(t.login, newUser.login)),
+  const hashedPassword = bcrypt.hashSync(candidate.password, salt)
+  candidate.password = hashedPassword
+  const existingUser = await db.user.findFirst({
+    where: {
+      OR: [{ email: candidate.email }, { login: candidate.login }],
+    },
   })
-  if (dbUser) {
+  if (existingUser) {
     console.log('Sign up error ocurred')
     return
   }
-  await db.insert(usersTable).values(newUser)
-  return newUser
+  await db.user.create({ data: candidate })
+  return candidate
 }
 
-export async function signUpUser(user: InsertUser) {
+export async function signUpUser(user: CreateUser) {
   return _signUpUser.bind(null, user)()
 }
 
-async function _signInUser(credentials: { login: string; password: string }) {
-  const dbUser = await db.query.usersTable.findFirst({
-    where: (t, { eq }) => eq(t.login, credentials.login),
+async function _signInUser(credentials: Pick<CreateUser, 'login' | 'password'>) {
+  const existingUser = await db.user.findFirst({
+    where: { login: credentials.login },
   })
-  if (!dbUser) return
-  if (bcrypt.compareSync(credentials.password, dbUser.password)) {
+  if (!existingUser) return
+  if (bcrypt.compareSync(credentials.password, existingUser.password)) {
     const token = jwt.sign(
       {
-        id: dbUser.id,
+        id: existingUser.id,
       } satisfies Token,
       process.env.JWT_SECRET!,
       {
@@ -57,15 +59,17 @@ export async function signInUser(credentials: { login: string; password: string 
   return _signInUser.bind(null, credentials)()
 }
 
-export async function auth(): Promise<SelectUser | undefined> {
+export async function auth(): Promise<User | undefined> {
   const token = cookies().get('auth')?.value
   if (!token) return
   try {
     const verifiedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token
-    const dbUser = await db.query.usersTable.findFirst({
-      where: (t, { eq }) => eq(t.id, verifiedToken.id),
+    const dbUser = await db.user.findFirst({
+      where: {
+        id: verifiedToken.id,
+      },
     })
-    return dbUser
+    return dbUser ?? undefined
   } catch (error) {
     console.warn(error)
   }

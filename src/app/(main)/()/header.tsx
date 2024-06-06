@@ -1,13 +1,13 @@
 'use client'
 
 import { signInUser } from '@/actions'
-import { SelectUser } from '@/db/schema/users'
+import { User } from '@prisma/client'
 import * as Popover from '@radix-ui/react-popover'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { ComponentProps, useRef } from 'react'
 
-export default function Header({ user, ...props }: ComponentProps<'header'> & { user: SelectUser | undefined }) {
+export default function Header({ user, ...props }: ComponentProps<'header'> & { user: User | undefined }) {
   return (
     <header {...props} className={clsx(props.className, 'flex items-center px-6 py-4')}>
       <nav className='mr-auto'>

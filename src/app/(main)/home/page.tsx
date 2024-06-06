@@ -1,5 +1,5 @@
+import { db } from '#/prisma'
 import { auth } from '@/actions'
-import { db } from '@/db'
 import { route } from '@/utils'
 import { redirect } from 'next/navigation'
 import Course from './()/course'
@@ -12,15 +12,15 @@ export default async function Home() {
     return
   }
 
-  const courses = await db.query.usersCoursesParticipationTable
-    .findMany({
-      columns: {},
-      where: (t, { eq }) => eq(t.participantId, authUser.id),
-      with: {
-        course: true,
+  const courses = await db.course.findMany({
+    where: {
+      students: {
+        some: {
+          id: authUser.id,
+        },
       },
-    })
-    .then((c) => c.map((c) => c.course))
+    },
+  })
 
   return (
     <main className=''>

@@ -1,0 +1,66 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+model User {
+  id                  Int      @id @default(autoincrement())
+  createdAt           DateTime @default(now())
+  login               String   @unique
+  password            String
+  name                String
+  surname             String
+  middlename          String?
+  email               String   @unique
+  confirmed           Boolean  @default(false)
+  admin               Boolean  @default(false)
+  tutor               Boolean  @default(false)
+  createdCourses      Course[] @relation("cc")
+  participatedCourses Course[] @relation("pc")
+  createdTasks        Task[]   @relation("created-tasks")
+}
+
+model Group {
+  id        Int      @id @default(autoincrement())
+  title     String
+  createdAt DateTime @default(now())
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  title       String
+  description String?
+  tutorId     Int
+  tutor       User     @relation("cc", fields: [tutorId], references: [id], onDelete: Cascade)
+  students    User[]   @relation("pc")
+}
+
+model Work {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+enum TaskType {
+  Agree
+  SelectOne
+  SelectMany
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  title       String
+  description String?
+  tutorId     Int
+  tutor       User     @relation("created-tasks", fields: [tutorId], references: [id], onDelete: Cascade)
+  type        TaskType
+  data        Json
+}
