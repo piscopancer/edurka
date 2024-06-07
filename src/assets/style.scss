@@ -7,23 +7,24 @@
   @apply bg-zinc-900 text-zinc-200;
 }
 input {
-  @apply caret-accent bg-[unset] outline-none;
+  @apply bg-[unset] caret-accent outline-none;
 }
 html {
   &::-webkit-scrollbar {
     @apply h-0 w-0;
   }
-  scroll-behavior: smooth !important;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 svg {
   @apply h-auto w-auto shrink-0;
 }
 @media (screen(md)) {
   ::-webkit-scrollbar {
-    @apply md:h-5 md:w-5;
+    @apply md:size-2;
   }
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full border-[0.5rem] border-solid border-transparent bg-zinc-700 bg-clip-padding hover:bg-zinc-600;
+    @apply bg-zinc-400 hover:bg-zinc-500;
   }
   ::-webkit-scrollbar-corner {
     @apply bg-transparent;
@@ -36,13 +37,14 @@ input,
 textarea,
 button,
 a {
-  @apply outline-accent outline outline-0 outline-offset-2 focus-visible:outline-[3px];
+  @apply outline outline-0 outline-offset-2 outline-accent focus-visible:outline-[3px];
 }
 code {
   @apply font-[unset];
 }
 [data-radix-popper-content-wrapper] > * {
-  &[data-state='open'] {
+  &[data-state='open'],
+  &[data-state='delayed-open'] {
     &[data-side='top'] {
       animation: appearTop 0.2s ease-out forwards;
       @keyframes appearTop {

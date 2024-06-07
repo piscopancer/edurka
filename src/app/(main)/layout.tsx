@@ -1,5 +1,6 @@
-import { auth } from '@/actions'
+import { auth } from '@/actions/users'
 import '@/assets/style.scss'
+import { hasCookie } from '@/cookies'
 import { project } from '@/project'
 import type { Metadata } from 'next'
 import Footer from './()/footer'
@@ -12,10 +13,11 @@ export const metadata: Metadata = {
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const authUser = await auth()
+  const tutorMode = (await hasCookie('tutor')) && !!authUser?.tutor
 
   return (
     <>
-      <Header user={authUser} />
+      <Header user={authUser} tutorMode={tutorMode} />
       <div className='grow'>{children}</div>
       <Footer />
     </>

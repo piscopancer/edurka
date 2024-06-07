@@ -10,6 +10,9 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   let token = request.cookies.get('auth')?.value
+  if (!token && request.nextUrl.pathname !== '/') {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
   const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
   if (!token) return
   try {
@@ -23,7 +26,10 @@ export async function middleware(request: NextRequest) {
       secure: true,
     })
   } catch (error) {
-    console.warn(error)
+    if (request.nextUrl.pathname !== '/') {
+      return NextResponse.rewrite(new URL('/', request.url))
+    }
   }
+
   return response
 }

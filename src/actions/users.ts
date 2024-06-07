@@ -1,16 +1,15 @@
 'use server'
 
-import { User } from '@prisma/client'
+import { db } from '#/prisma'
+import { Token } from '@/auth'
+import { route } from '@/utils'
+import { Prisma, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { db } from '../prisma'
-import { Token } from './auth'
-import { CreateUser } from './user'
-import { route } from './utils'
 
-async function _signUpUser(candidate: CreateUser) {
+async function _signUp(candidate: Prisma.UserCreateInput) {
   const salt = bcrypt.genSaltSync(5)
   const hashedPassword = bcrypt.hashSync(candidate.password, salt)
   candidate.password = hashedPassword
@@ -26,12 +25,11 @@ async function _signUpUser(candidate: CreateUser) {
   await db.user.create({ data: candidate })
   return candidate
 }
-
-export async function signUpUser(user: CreateUser) {
-  return _signUpUser.bind(null, user)()
+export async function signUp(user: Prisma.UserCreateInput) {
+  return _signUp.bind(null, user)()
 }
 
-async function _signInUser(credentials: Pick<CreateUser, 'login' | 'password'>) {
+async function _signIn(credentials: Pick<Prisma.UserCreateInput, 'login' | 'password'>) {
   const existingUser = await db.user.findFirst({
     where: { login: credentials.login },
   })
@@ -50,13 +48,11 @@ async function _signInUser(credentials: Pick<CreateUser, 'login' | 'password'>) 
       httpOnly: true,
       secure: true,
     })
-    redirect(route('/home'))
-    // return dbUser
+    redirect(route('/home/courses'))
   }
 }
-
-export async function signInUser(credentials: { login: string; password: string }) {
-  return _signInUser.bind(null, credentials)()
+export async function signIn(credentials: { login: string; password: string }) {
+  return _signIn.bind(null, credentials)()
 }
 
 export async function auth(): Promise<User | undefined> {
@@ -73,4 +69,12 @@ export async function auth(): Promise<User | undefined> {
   } catch (error) {
     console.warn(error)
   }
+}
+
+async function _signOut() {
+  cookies().delete('auth')
+  redirect(route('/'))
+}
+export async function signOut() {
+  return _signOut.bind(null)()
 }

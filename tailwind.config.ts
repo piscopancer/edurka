@@ -9,13 +9,22 @@ export const config: Config = {
       mono: 'var(--font-geist-mono)',
     },
     boxShadow: ({ theme }) => ({
-      DEFAULT: `0 4px 0 ${theme('colors.zinc.500/0.5')}`,
-      key: `0 1px 0 2px ${theme('colors.zinc.700')}`,
+      DEFAULT: `0 4px 0 ${theme('colors.zinc.400/0.5')}`,
+      key: `0 1px 0 2px ${theme('colors.zinc.400')}`,
     }),
     extend: {
       colors: ({ colors }) => ({
         accent: colors.sky[500],
       }),
+      keyframes: {
+        float: {
+          from: { transform: 'translateY(-4px)' },
+          to: { transform: 'translateY(4px)' },
+        },
+      },
+      animation: {
+        float: 'float 2s ease-in-out infinite alternate',
+      },
     },
   },
   plugins: [

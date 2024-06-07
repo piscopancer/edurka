@@ -9,7 +9,7 @@ export default function Course({
   authUser,
   course,
   ...props
-}: ComponentProps<'article'> & { authUser: AuthUser } & { course: Course }) {
+}: ComponentProps<'article'> & { authUser: AuthUser; course: Course }) {
   return (
     <article {...props} className={clsx(props.className, '')}>
       <span>{course.id}</span>
