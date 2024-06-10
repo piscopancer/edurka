@@ -3,7 +3,7 @@ import { hasCookie } from '@/cookies'
 import { route } from '@/utils'
 import { redirect } from 'next/navigation'
 
-export default async function TasksPage() {
+export default async function WorksPage() {
   const authUser = await auth()
   if (!authUser) return
   if (!authUser.confirmed) {

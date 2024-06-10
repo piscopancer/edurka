@@ -20,8 +20,10 @@ model User {
   confirmed           Boolean  @default(false)
   admin               Boolean  @default(false)
   tutor               Boolean  @default(false)
-  createdCourses      Course[] @relation("cc")
-  participatedCourses Course[] @relation("pc")
+  createdCourses      Course[] @relation("created-courses")
+  participatedCourses Course[] @relation("participated-courses")
+  createdGroups       Group[]  @relation("created-groups")
+  participatedGroups  Group[]  @relation("participated-groups")
   createdTasks        Task[]   @relation("created-tasks")
 }
 
@@ -29,6 +31,9 @@ model Group {
   id        Int      @id @default(autoincrement())
   title     String
   createdAt DateTime @default(now())
+  tutorId   Int
+  tutor     User     @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
+  students  User[]   @relation("participated-groups")
 }
 
 model Course {
@@ -37,8 +42,9 @@ model Course {
   title       String
   description String?
   tutorId     Int
-  tutor       User     @relation("cc", fields: [tutorId], references: [id], onDelete: Cascade)
-  students    User[]   @relation("pc")
+  tutor       User     @relation("created-courses", fields: [tutorId], references: [id], onDelete: Cascade)
+  students    User[]   @relation("participated-courses")
+  works       Work[]   @relation("courses-works")
 }
 
 model Work {
@@ -46,6 +52,8 @@ model Work {
   title       String
   description String?
   createdAt   DateTime @default(now())
+  inCourses   Course[] @relation("courses-works")
+  tasks       Task[]   @relation("works-tasks")
 }
 
 enum TaskType {
@@ -59,8 +67,9 @@ model Task {
   createdAt   DateTime @default(now())
   title       String
   description String?
-  tutorId     Int
-  tutor       User     @relation("created-tasks", fields: [tutorId], references: [id], onDelete: Cascade)
   type        TaskType
   data        Json
+  tutorId     Int
+  tutor       User     @relation("created-tasks", fields: [tutorId], references: [id], onDelete: Cascade)
+  inWorks     Work[]   @relation("works-tasks")
 }

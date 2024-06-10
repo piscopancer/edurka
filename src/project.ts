@@ -16,6 +16,6 @@ export const project = {
   links: {
     github: 'https://github.com/piscopancer/mkrs',
   },
-  url: 'https://edurka.vercel.app',
+  url: process.env.NEXT_PUBLIC_URL,
   keywords: ['questions', 'forum', 'ask'],
 } as const

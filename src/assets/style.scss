@@ -14,7 +14,7 @@ html {
     @apply h-0 w-0;
   }
   scroll-behavior: smooth;
-  scrollbar-gutter: stable;
+  // scrollbar-gutter: stable;
 }
 svg {
   @apply h-auto w-auto shrink-0;

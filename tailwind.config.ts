@@ -9,7 +9,7 @@ export const config: Config = {
       mono: 'var(--font-geist-mono)',
     },
     boxShadow: ({ theme }) => ({
-      DEFAULT: `0 4px 0 ${theme('colors.zinc.400/0.5')}`,
+      DEFAULT: `0 4px 0 ${theme('colors.zinc.900/0.1')}`,
       key: `0 1px 0 2px ${theme('colors.zinc.400')}`,
     }),
     extend: {
@@ -70,10 +70,7 @@ export const config: Config = {
           },
         )
 
-        const sort: (
-          a: { value: string; modifier: string | null },
-          b: { value: string; modifier: string | null },
-        ) => number = (aVariant, zVariant) => {
+        const sort: (a: { value: string; modifier: string | null }, b: { value: string; modifier: string | null }) => number = (aVariant, zVariant) => {
           let a = parseFloat(aVariant.value)
           let z = parseFloat(zVariant.value)
 

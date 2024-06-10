@@ -1,13 +1,54 @@
 'use client'
 
 import { createCourse } from '@/actions/courses'
-import { Course } from '@prisma/client'
+import { Course, User } from '@prisma/client'
+import * as Dialog from '@radix-ui/react-dialog'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ComponentProps, useId, useRef, useState } from 'react'
+import { TbX } from 'react-icons/tb'
 import { searchStudents } from './actions'
 
-export default function CourseCreator({ tutorId, ...props }: ComponentProps<'article'> & Pick<Course, 'tutorId'>) {
+// title, description (tiptap editor, db type json), connect works, connect group,
+
+export default function CourseCreator({ authUser }: { authUser: User }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>
+        <button className='rounded-md bg-zinc-900 px-4 py-2 text-zinc-200 duration-100 hover:bg-zinc-800'>New course</button>
+      </Dialog.Trigger>
+      <AnimatePresence>
+        {open && (
+          <Dialog.Portal forceMount>
+            <motion.div className='z-[1]' exit={{ opacity: 0, transition: { duration: 0.2 } }} initial={{ opacity: 0 }} animate={{ opacity: 0.2 }}>
+              <Dialog.Overlay className='fixed inset-0 bg-black' />
+            </motion.div>
+            <Dialog.Content asChild>
+              <motion.div
+                exit={{ opacity: 0, y: 50, transition: { duration: 0.1 } }}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0, transition: { ease: 'backOut' } }}
+                className='fixed inset-0 z-[1] mx-auto my-4 flex max-w-screen-lg grow flex-col rounded-md bg-zinc-200 @container max-md:my-0'
+              >
+                <Dialog.Trigger className='ml-auto block text-zinc-400 duration-100 hover:text-zinc-500'>
+                  <TbX className='size-16 p-4' />
+                </Dialog.Trigger>
+                <div className='mx-4'>
+                  <CourseForm tutorId={authUser.id} />
+                </div>
+              </motion.div>
+            </Dialog.Content>
+          </Dialog.Portal>
+        )}
+      </AnimatePresence>
+    </Dialog.Root>
+  )
+}
+
+function CourseForm({ tutorId, ...props }: ComponentProps<'article'> & Pick<Course, 'tutorId'>) {
   const createCourseMutation = useMutation({ mutationFn: createCourse })
   const titleInputRef = useRef<HTMLInputElement>(null!)
   const titleId = useId()

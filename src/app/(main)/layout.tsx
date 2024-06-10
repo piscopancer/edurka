@@ -18,7 +18,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <>
       <Header user={authUser} tutorMode={tutorMode} />
-      <div className='grow'>{children}</div>
+      <div className='relative grow'>{children}</div>
       <Footer />
     </>
   )

@@ -1,7 +1,8 @@
+import {} from '@prisma/client/edge'
 import * as jose from 'jose'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { type Token } from './auth'
+import { protectedRoutes, type Token } from './auth'
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
@@ -10,7 +11,7 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   let token = request.cookies.get('auth')?.value
-  if (!token && request.nextUrl.pathname !== '/') {
+  if (!token && protectedRoutes.some((pr) => request.nextUrl.pathname.includes(pr))) {
     return NextResponse.redirect(new URL('/', request.url))
   }
   const secret = new TextEncoder().encode(process.env.JWT_SECRET!)

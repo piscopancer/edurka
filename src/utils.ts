@@ -2,6 +2,7 @@ import twConfig from '#/tailwind.config'
 import type { Route } from 'next'
 import resolveConfig from 'tailwindcss/resolveConfig'
 import { useSnapshot } from 'valtio'
+import { z } from 'zod'
 
 export type NextPage<ParamsAlias extends string | never = never, SearchParams extends string[] = []> = {
   params: ParamsAlias extends never ? never : Record<ParamsAlias, string>
@@ -71,6 +72,10 @@ export function getShuffledArray<T extends unknown>(array: readonly T[] | T[], s
   return shuffled
 }
 
+export type ObjectSchema<O extends object> = z.ZodObject<{
+  [K in keyof O]: z.ZodTypeAny
+}>
+
 export function clone<O extends object>(obj: O) {
   return JSON.parse(JSON.stringify(obj)) as O
 }
@@ -86,10 +91,7 @@ export function randomItemsFromArray<T>(arr: T[], num: number) {
   return result
 }
 
-export function groupArray<T extends object, P extends string>(
-  arr: Readonly<T[]> | T[],
-  by: (item: T) => P,
-): Record<P, T[]> {
+export function groupArray<T extends object, P extends string>(arr: Readonly<T[]> | T[], by: (item: T) => P): Record<P, T[]> {
   const groups: any = {}
   for (let i = 0; i < arr.length; i++) {
     const prop = by(arr[i])
@@ -101,3 +103,16 @@ export function groupArray<T extends object, P extends string>(
   }
   return groups as Record<P, T[]>
 }
+
+export type Error<R extends { success: boolean }> = R & { success: false }
+
+export type Success<R extends { success: boolean }> = R & { success: true }
+
+export type Result<Success extends object, Errors extends [string, object?][], Error extends Errors[number] = Errors[number]> =
+  | ({ success: true } & Success)
+  | {
+      success: false
+      error: {
+        code: Error[0]
+      } & Error[1]
+    }

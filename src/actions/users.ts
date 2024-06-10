@@ -9,26 +9,6 @@ import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-async function _signUp(candidate: Prisma.UserCreateInput) {
-  const salt = bcrypt.genSaltSync(5)
-  const hashedPassword = bcrypt.hashSync(candidate.password, salt)
-  candidate.password = hashedPassword
-  const existingUser = await db.user.findFirst({
-    where: {
-      OR: [{ email: candidate.email }, { login: candidate.login }],
-    },
-  })
-  if (existingUser) {
-    console.log('Sign up error ocurred')
-    return
-  }
-  await db.user.create({ data: candidate })
-  return candidate
-}
-export async function signUp(user: Prisma.UserCreateInput) {
-  return _signUp.bind(null, user)()
-}
-
 async function _signIn(credentials: Pick<Prisma.UserCreateInput, 'login' | 'password'>) {
   const existingUser = await db.user.findFirst({
     where: { login: credentials.login },
@@ -58,17 +38,20 @@ export async function signIn(credentials: { login: string; password: string }) {
 export async function auth(): Promise<User | undefined> {
   const token = cookies().get('auth')?.value
   if (!token) return
+  let verifiedToken: Token | undefined = undefined
   try {
-    const verifiedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token
-    const dbUser = await db.user.findFirst({
+    verifiedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token
+  } catch (tokenError) {
+    console.warn('Token error', tokenError)
+  }
+  if (!verifiedToken) return undefined
+  const dbUser =
+    (await db.user.findFirst({
       where: {
         id: verifiedToken.id,
       },
-    })
-    return dbUser ?? undefined
-  } catch (error) {
-    console.warn(error)
-  }
+    })) ?? undefined
+  return dbUser
 }
 
 async function _signOut() {
@@ -77,4 +60,18 @@ async function _signOut() {
 }
 export async function signOut() {
   return _signOut.bind(null)()
+}
+
+export type QueryTestUsersFilter = Partial<Pick<User, 'name' | 'surname' | 'middlename' | 'tutor'>>
+
+export async function queryTestUsers(filter: QueryTestUsersFilter) {
+  return db.user.findMany({
+    where: {
+      tutor: filter.tutor ? true : undefined,
+      name: {
+        contains: filter.name || undefined,
+        mode: 'insensitive',
+      },
+    },
+  })
 }
