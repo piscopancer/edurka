@@ -1,13 +1,11 @@
 import twConfig from '#/tailwind.config'
+import { formatDate as fnsFormatDate } from 'date-fns'
+import { enUS } from 'date-fns/locale'
 import type { Route } from 'next'
+import colors from 'tailwindcss/colors'
 import resolveConfig from 'tailwindcss/resolveConfig'
 import { useSnapshot } from 'valtio'
 import { z } from 'zod'
-
-export type NextPage<ParamsAlias extends string | never = never, SearchParams extends string[] = []> = {
-  params: ParamsAlias extends never ? never : Record<ParamsAlias, string>
-  searchParams: Record<SearchParams[number], string | null>
-}
 
 export function objectEntries<O extends object>(obj?: O) {
   return Object.entries(obj ?? {}) as [keyof O, O[keyof O]][]
@@ -50,8 +48,6 @@ export function route<R extends string>(route: Route<R>, searchParams?: Record<s
 }
 
 export const ease = [0.3, 1, 0, 1] as const
-
-export const { theme } = resolveConfig(twConfig)
 
 export function getShuffledArray<T extends unknown>(array: readonly T[] | T[], seed: number): T[] {
   function random(seed: number) {
@@ -116,3 +112,11 @@ export type Result<Success extends object, Errors extends [string, object?][], E
         code: Error[0]
       } & Error[1]
     }
+
+export function formatDate(dateTime: Date) {
+  return fnsFormatDate(dateTime, 'do MMMM, yyyy', { locale: enUS })
+}
+
+export const accentColor = colors.sky[500]
+
+export const { theme } = resolveConfig(twConfig)

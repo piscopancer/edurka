@@ -21,19 +21,20 @@ model User {
   admin               Boolean  @default(false)
   tutor               Boolean  @default(false)
   createdCourses      Course[] @relation("created-courses")
-  participatedCourses Course[] @relation("participated-courses")
   createdGroups       Group[]  @relation("created-groups")
   participatedGroups  Group[]  @relation("participated-groups")
+  participatedCourses Course[] @relation("participated-courses")
   createdTasks        Task[]   @relation("created-tasks")
 }
 
 model Group {
-  id        Int      @id @default(autoincrement())
-  title     String
-  createdAt DateTime @default(now())
-  tutorId   Int
-  tutor     User     @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
-  students  User[]   @relation("participated-groups")
+  id                  Int      @id @default(autoincrement())
+  title               String
+  createdAt           DateTime @default(now())
+  tutorId             Int
+  tutor               User     @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
+  students            User[]   @relation("participated-groups")
+  participatedCourses Course[] @relation("participated-courses")
 }
 
 model Course {
@@ -43,8 +44,9 @@ model Course {
   description String?
   tutorId     Int
   tutor       User     @relation("created-courses", fields: [tutorId], references: [id], onDelete: Cascade)
-  students    User[]   @relation("participated-courses")
+  groups      Group[]  @relation("participated-courses")
   works       Work[]   @relation("courses-works")
+  students    User[]   @relation("participated-courses")
 }
 
 model Work {
@@ -60,6 +62,8 @@ enum TaskType {
   Agree
   SelectOne
   SelectMany
+  Line
+  Multiline
 }
 
 model Task {

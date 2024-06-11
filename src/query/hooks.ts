@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 export function useTestUsers(filter: QueryTestUsersFilter) {
   return useQuery({
     queryKey: ['test-users', filter],
-    refetchInterval: 2000,
+    refetchInterval: 1000 * 60,
     queryFn: () => queryTestUsers(filter),
-    // staleTime: 5000,
+    staleTime: 1000 * 10,
   })
 }

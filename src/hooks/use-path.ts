@@ -1,3 +1,6 @@
+'use client'
+
+import { pagePathSchema } from '@/types/path'
 import { Route } from 'next'
 import { useSearchParams as useNextSearchParams, useRouter } from 'next/navigation'
 import { z } from 'zod'
@@ -22,7 +25,7 @@ export default function usePath<PageSchema extends ReturnType<typeof pagePathSch
   function getAllSP() {
     const spObj = Object.fromEntries(sp)
     const parseRes = pageSchema.shape.searchParams.safeParse(spObj)
-    return parseRes.data
+    return parseRes.data as Page['searchParams']
   }
   return {
     sp: {
@@ -31,38 +34,4 @@ export default function usePath<PageSchema extends ReturnType<typeof pagePathSch
       getAll: getAllSP,
     },
   }
-}
-
-export function pagePathSchema<P extends z.ZodRawShape, SP extends z.ZodRawShape>(paramsSchema: P, searchParamsSchema: SP) {
-  return z.object({
-    params: z.object(paramsSchema),
-    searchParams: z.object(searchParamsSchema).partial(),
-  })
-}
-
-export const stringToBooleanSchema = z.string().transform((str) => {
-  switch (str) {
-    case 'true':
-      return true
-    case 'false':
-      return false
-  }
-})
-
-export function encodedArraySchema<Arr extends Parameters<typeof z.enum>[0]>(arr: Readonly<Arr>) {
-  return z.preprocess(
-    (encoded) => {
-      try {
-        if (typeof encoded === 'string') {
-          const parsed = JSON.parse(decodeURI(encoded))
-          if (typeof parsed === 'object' && Array.isArray(parsed)) {
-            return parsed.filter((item) => arr.includes(item))
-          }
-        }
-      } catch (error) {
-        return undefined
-      }
-    },
-    z.array(z.enum(arr)),
-  )
 }

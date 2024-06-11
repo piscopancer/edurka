@@ -1,19 +1,31 @@
-// type TaskBase<T> = {
-//   id: number
-//   name: string
-//   type: T
-// }
+import { $Enums } from '@prisma/client'
+import { z } from 'zod'
 
-// type AutoTask<T, A> = TaskBase<T> & {
-//   correctAnswer: A
-// }
+const TasksSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal($Enums.TaskType.Agree),
+    correctAnswer: z.boolean(),
+  }),
+  z.object({
+    type: z.literal($Enums.TaskType.SelectOne),
+    options: z.array(z.string()),
+    correctAnswer: z.string(),
+  }),
+  z.object({
+    type: z.literal($Enums.TaskType.SelectMany),
+    options: z.array(z.string()),
+    correctAnswer: z.array(z.string()),
+  }),
+  z.object({
+    type: z.literal($Enums.TaskType.Line),
+    // answer is manual: string
+  }),
+  z.object({
+    type: z.literal($Enums.TaskType.Multiline),
+    // answer is manual: json
+  }),
+])
 
-// type ManualTask<T> = TaskBase<T>
+export type Tasks = z.infer<typeof TasksSchema>
 
-// type AgreeTask = AutoTask<'agree', boolean>
-
-// type SelectOneTask = AutoTask<'select-one', string>
-
-// type SelectManyTask = AutoTask<'select-many', string[]>
-
-// type FillGapsTask = AutoTask<'fill-gaps', {}[]>
+export type Task<T extends Tasks['type']> = Tasks & { type: T }

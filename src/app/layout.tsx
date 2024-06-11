@@ -1,6 +1,5 @@
 import '@/assets/style.scss'
-import { queryClient } from '@/query'
-import { QueryClientProvider } from '@tanstack/react-query'
+import QueryProvider from '@/query/provider'
 import clsx from 'clsx'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
@@ -15,7 +14,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
       <body className={clsx(GeistSans.variable, GeistMono.variable, 'flex min-h-dvh flex-col bg-zinc-200 font-sans')}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   )
