@@ -3,6 +3,9 @@
 @tailwind utilities;
 @tailwind variants;
 
+* {
+  @apply border-zinc-900;
+}
 ::selection {
   @apply bg-zinc-900 text-zinc-200;
 }
@@ -17,7 +20,7 @@ html {
   // scrollbar-gutter: stable;
 }
 svg {
-  @apply h-auto w-auto shrink-0;
+  @apply inline-block size-auto shrink-0 stroke-[1.5] align-middle;
 }
 @media (screen(md)) {
   ::-webkit-scrollbar {
@@ -37,7 +40,7 @@ input,
 textarea,
 button,
 a {
-  @apply outline outline-0 outline-offset-2 outline-accent focus-visible:outline-[3px];
+  @apply outline outline-0 outline-offset-2 outline-accent focus-visible:outline-2;
 }
 code {
   @apply font-[unset];
