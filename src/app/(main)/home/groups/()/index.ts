@@ -1,13 +1,10 @@
 import { db } from '#/prisma'
+import { AuthUser } from '@/auth'
 import { Merge } from '@/merge'
-import { User } from '@prisma/client'
 
-export type Group = Merge<
-  Awaited<ReturnType<typeof queryCreatedGroups>>,
-  Awaited<ReturnType<typeof queryParticipatedGroups>>
->[number]
+export type Group = Merge<Awaited<ReturnType<typeof queryCreatedGroups>>, Awaited<ReturnType<typeof queryParticipatedGroups>>>[number]
 
-export async function queryCreatedGroups(authUser: User) {
+export async function queryCreatedGroups(authUser: AuthUser) {
   return db.group.findMany({
     where: {
       tutorId: authUser.id,
@@ -18,7 +15,7 @@ export async function queryCreatedGroups(authUser: User) {
   })
 }
 
-export async function queryParticipatedGroups(authUser: User) {
+export async function queryParticipatedGroups(authUser: AuthUser) {
   return db.group.findMany({
     where: {
       students: {

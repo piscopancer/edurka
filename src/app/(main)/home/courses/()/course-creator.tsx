@@ -1,10 +1,11 @@
 'use client'
 
 import { createCourse } from '@/actions/courses'
+import { AuthUser } from '@/auth'
 import Search from '@/components/search'
 import Switch from '@/components/switch'
 import { formatDate } from '@/utils'
-import { Course, User } from '@prisma/client'
+import { Course } from '@prisma/client'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
@@ -15,7 +16,7 @@ import { useSnapshot } from 'valtio'
 import { findGroups } from './actions'
 import { createCourseStore } from './store'
 
-export default function CourseCreator({ authUser }: { authUser: User }) {
+export default function CourseCreator({ authUser }: { authUser: AuthUser }) {
   const [open, setOpen] = useState(false)
   const createCourseMutation = useMutation({ mutationFn: createCourse })
   const createCourseSnap = useSnapshot(createCourseStore)

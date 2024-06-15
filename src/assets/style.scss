@@ -3,8 +3,20 @@
 @tailwind utilities;
 @tailwind variants;
 
+// .bg {
+//   background: radial-gradient(#000 20%, transparent 20%) 0 0;
+//   background-size: 5px 5px;
+//   animation: a infinite 5s linear;
+// }
+
+// @keyframes a {
+//   to {
+//     background-position: 10px 10px;
+//   }
+// }
+
 * {
-  @apply border-zinc-900;
+  @apply border-zinc-800;
 }
 ::selection {
   @apply bg-zinc-900 text-zinc-200;
@@ -17,17 +29,16 @@ html {
     @apply h-0 w-0;
   }
   scroll-behavior: smooth;
-  // scrollbar-gutter: stable;
 }
 svg {
   @apply inline-block size-auto shrink-0 stroke-[1.5] align-middle;
 }
 @media (screen(md)) {
   ::-webkit-scrollbar {
-    @apply md:size-2;
+    @apply md:size-1;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-zinc-400 hover:bg-zinc-500;
+    @apply bg-zinc-900 hover:bg-zinc-800;
   }
   ::-webkit-scrollbar-corner {
     @apply bg-transparent;

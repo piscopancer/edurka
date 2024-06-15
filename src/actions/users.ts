@@ -1,9 +1,10 @@
 'use server'
 
 import { db } from '#/prisma'
-import { Token } from '@/auth'
+import { AuthUser, Token } from '@/auth'
+import { getSharedNotificationsFindManyArgs } from '@/notifications'
 import { route } from '@/utils'
-import { Prisma, User } from '@prisma/client'
+import { $Enums, Prisma, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
@@ -35,23 +36,34 @@ export async function signIn(credentials: { login: string; password: string }) {
   return _signIn.bind(null, credentials)()
 }
 
-export async function auth(): Promise<User | undefined> {
+export async function auth(): Promise<AuthUser | null> {
   const token = cookies().get('auth')?.value
-  if (!token) return
+  if (!token) return null
   let verifiedToken: Token | undefined = undefined
   try {
     verifiedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token
   } catch (tokenError) {
     console.warn('Token error', tokenError)
   }
-  if (!verifiedToken) return undefined
+  if (!verifiedToken) return null
   const dbUser =
     (await db.user.findFirst({
       where: {
         id: verifiedToken.id,
       },
+      select: {
+        id: true,
+        createdAt: true,
+        email: true,
+        confirmed: true,
+        name: true,
+        surname: true,
+        middlename: true,
+        tutor: true,
+        admin: true,
+      },
     })) ?? undefined
-  return dbUser
+  return dbUser ?? null
 }
 
 async function _signOut() {
@@ -74,4 +86,37 @@ export async function queryTestUsers(filter: QueryTestUsersFilter) {
       },
     },
   })
+}
+
+export async function queryNotifications(receiverId: number) {
+  const { where, include } = getSharedNotificationsFindManyArgs(receiverId)
+  const notifications = await db.$transaction(async (tx) => {
+    const addedToCourseNotifications = await tx.addedToCourseNotification.findMany({
+      where,
+      include: {
+        ...include,
+        course: true,
+      },
+    })
+    const addedToGroupNotifications = await tx.addedToGroupNotification.findMany({
+      where,
+      include: {
+        ...include,
+        group: {
+          include: {
+            _count: {
+              select: {
+                students: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    return [
+      addedToCourseNotifications.map((ntf) => ({ ...ntf, type: $Enums.NotificationType.AddedToCourseNotification })),
+      addedToGroupNotifications.map((ntf) => ({ ...ntf, type: $Enums.NotificationType.AddedToGroupNotification })),
+    ]
+  })
+  return notifications.flat()
 }

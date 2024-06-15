@@ -44,40 +44,36 @@ export default function SignUp(props: ComponentProps<'div'>) {
     <div {...props} className={clsx(props.className, '@container')}>
       <h2 className='mb-6 text-center text-xl'>Sign up</h2>
       <fieldset className='mb-2'>
-        <label htmlFor='login' className='block pb-1 text-sm text-zinc-600'>
+        <label htmlFor='login' className='block pb-1 text-sm'>
           Login
         </label>
         <input
           id='login'
           ref={loginInputRef}
           type='text'
-          className={clsx('w-full rounded-md bg-zinc-300 px-3 py-2 not-[:last-child]:mb-1', parseErrors?.login?.length && 'outline-rose-400')}
+          className={clsx('w-full rounded-lg border px-3 py-2 shadow not-[:last-child]:mb-1', parseErrors?.login?.length && 'outline-rose-400')}
         />
         {parseErrors?.login?.length && <Errors field={parseErrors.login} />}
       </fieldset>
       <fieldset className='mb-2'>
-        <label htmlFor='password' className='block pb-1 text-sm text-zinc-600'>
+        <label htmlFor='password' className='block pb-1 text-sm'>
           Password
         </label>
         <div className='hopper not-[:last-child]:mb-1'>
+          <button onClick={() => setRevealPassword((prev) => !prev)} className='relative flex aspect-square items-center justify-center self-stretch justify-self-end pr-2'>
+            <RevealPasswordIcon className='size-5' />
+          </button>
           <input
             id='password'
             ref={passwordInputRef}
             type={revealPassword ? 'text' : 'password'}
-            className={clsx('w-full rounded-md bg-zinc-300 px-3 py-2', parseErrors?.password?.length && 'outline-rose-400')}
+            className={clsx('w-full rounded-lg border px-3 py-2 shadow not-[:last-child]:mb-1', parseErrors?.password?.length && 'outline-rose-400')}
           />
-          <button
-            onClick={() => setRevealPassword((prev) => !prev)}
-            className='flex aspect-square h-full items-center justify-center justify-self-end pr-2 text-zinc-500 duration-100 hover:text-zinc-900'
-          >
-            {revealPassword}
-            <RevealPasswordIcon className='size-5' />
-          </button>
         </div>
         {parseErrors?.password?.length && <Errors field={parseErrors.password} />}
       </fieldset>
       <fieldset className='mb-2'>
-        <label htmlFor='email' className='flex items-center pb-1 text-sm text-zinc-600'>
+        <label htmlFor='email' className='flex items-center pb-1 text-sm'>
           <span className='mr-1'>Email</span>{' '}
           <Tooltip content='You will receive a confirmation message'>
             <button className='-translate-y-px rounded-full'>
@@ -90,21 +86,27 @@ export default function SignUp(props: ComponentProps<'div'>) {
           ref={emailInputRef}
           placeholder='example@gmail.com'
           type='text'
-          className={clsx('w-full rounded-md bg-zinc-300 px-3 py-2 not-[:last-child]:mb-1', parseErrors?.email?.length && 'outline-rose-400')}
+          className={clsx(
+            'w-full rounded-lg border px-3 py-2 shadow placeholder:italic placeholder:text-zinc-900 not-[:last-child]:mb-1',
+            parseErrors?.email?.length && 'outline-rose-400',
+          )}
         />
         {parseErrors?.email?.length && <Errors field={parseErrors.email} />}
       </fieldset>
       <div className='mb-6'>
-        <label className='mb-1 block text-sm text-zinc-600'>Personal details</label>
+        <label className='mb-1 block text-sm'>Personal details</label>
         <div className='grid grid-cols-[min-content,1fr,1fr] gap-2 @max-md:grid-cols-[1fr]'>
-          <TbUser className='size-10 rounded-full bg-zinc-300 stroke-zinc-400 p-2.5 @max-md:hidden' />
+          <TbUser className='size-10 rounded-full border border-dashed p-2.5 @max-md:hidden' />
           <div>
             <input
               ref={nameInputRef}
               autoComplete='name'
               placeholder='Name'
               type='text'
-              className={clsx('w-full rounded-md bg-zinc-300 px-3 py-2 not-[:last-child]:mb-1', parseErrors?.name?.length && 'outline-rose-400')}
+              className={clsx(
+                'w-full rounded-lg border px-3 py-2 shadow placeholder:italic placeholder:text-zinc-900 not-[:last-child]:mb-1',
+                parseErrors?.name?.length && 'outline-rose-400',
+              )}
             />
             {parseErrors?.name?.length && <Errors field={parseErrors.name} />}
           </div>
@@ -114,7 +116,10 @@ export default function SignUp(props: ComponentProps<'div'>) {
               autoComplete='name'
               placeholder='Surname'
               type='text'
-              className={clsx('w-full rounded-md bg-zinc-300 px-3 py-2 not-[:last-child]:mb-1', parseErrors?.surname?.length && 'outline-rose-400')}
+              className={clsx(
+                'w-full rounded-lg border px-3 py-2 shadow placeholder:italic placeholder:text-zinc-900 not-[:last-child]:mb-1',
+                parseErrors?.surname?.length && 'outline-rose-400',
+              )}
             />
             {parseErrors?.surname?.length && <Errors field={parseErrors.surname} />}
           </div>
@@ -150,7 +155,7 @@ export default function SignUp(props: ComponentProps<'div'>) {
           }
         }}
         disabled={signUpMutation.isPending || signInMutation.isPending}
-        className='mb-4 flex h-10 w-full items-center justify-center rounded-md bg-zinc-900 text-zinc-200 duration-100 hover:bg-zinc-800 disabled:opacity-50'
+        className='mb-4 flex h-10 w-full items-center justify-center rounded-lg bg-zinc-900 text-zinc-200 duration-100 hover:bg-zinc-800 disabled:opacity-50'
       >
         {signUpMutation.isPending || signInMutation.isPending ? <TbLoader className='animate-spin' /> : 'Continue'}
       </button>
@@ -158,7 +163,7 @@ export default function SignUp(props: ComponentProps<'div'>) {
         onClick={() => {
           headerStore.showUserPopup = true
         }}
-        className='mx-auto block rounded-full px-2 text-center text-sm text-zinc-600 hover:text-zinc-900 hover:underline'
+        className='mx-auto block rounded-full px-2 text-center text-sm hover:text-zinc-900 hover:underline'
       >
         I already have an account
       </button>

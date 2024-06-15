@@ -5,11 +5,9 @@ export default function WelcomePage() {
   return (
     <div>
       <section className='relative mb-[30vh] mt-[15vh]'>
-        <TbMicroscope className='animate-float absolute left-[10%] top-[45%] size-32 stroke-zinc-300' />
-        <TbPresentation className='animate-float absolute right-[10%] top-[30%] size-32 stroke-zinc-300' />
-        <h2 className='relative mx-auto mb-4 w-fit rounded-full bg-zinc-300 px-4 text-center font-mono text-zinc-700'>
-          Edurka
-        </h2>
+        <TbMicroscope className='absolute left-[10%] top-[45%] size-32 animate-float stroke-zinc-300' />
+        <TbPresentation className='absolute right-[10%] top-[30%] size-32 animate-float stroke-zinc-300' />
+        <h2 className='relative mx-auto mb-4 w-fit rounded-full border border-dashed px-4 text-center font-mono'>Edurka</h2>
         <h1 className='relative mx-auto max-w-screen-md text-center text-5xl font-medium leading-snug'>
           Easy to use education platform for{' '}
           <span className='bg-accent/10 text-accent'>

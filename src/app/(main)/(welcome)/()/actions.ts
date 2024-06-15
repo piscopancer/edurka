@@ -2,7 +2,6 @@
 
 import { db } from '#/prisma'
 import { Result } from '@/utils'
-import { Prisma } from '@prisma/client'
 import bcrypt from 'bcrypt'
 
 export type SignUpResult = Result<
@@ -12,7 +11,9 @@ export type SignUpResult = Result<
   [['failed', { message: string }]]
 >
 
-async function _signUp(candidate: Prisma.UserCreateInput): Promise<SignUpResult> {
+type CreateUser = Awaited<Parameters<typeof db.user.create>>[0]['data']
+
+async function _signUp(candidate: CreateUser): Promise<SignUpResult> {
   const salt = bcrypt.genSaltSync(5)
   const hashedPassword = bcrypt.hashSync(candidate.password, salt)
   candidate.password = hashedPassword
@@ -33,6 +34,6 @@ async function _signUp(candidate: Prisma.UserCreateInput): Promise<SignUpResult>
     id: createdUser.id,
   }
 }
-export async function signUp(user: Prisma.UserCreateInput) {
+export async function signUp(user: CreateUser) {
   return _signUp.bind(null, user)()
 }

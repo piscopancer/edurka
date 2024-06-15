@@ -4,10 +4,7 @@ import { NodeViewProps, NodeViewWrapper } from '@tiptap/react'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { TbExclamationCircle, TbTrash, TbX } from 'react-icons/tb'
-
-// space after node because of these two elements
-// <img class="ProseMirror-separator" alt="">
-// <br class="ProseMirror-trailingBreak"></br>
+import { z } from 'zod'
 
 type SelectOneProps = Omit<NodeViewProps, 'updateAttributes'> & {
   node: {
@@ -16,14 +13,22 @@ type SelectOneProps = Omit<NodeViewProps, 'updateAttributes'> & {
   updateAttributes: (attrs: Partial<Attrs>) => void
 }
 
+const optionsToArraySchema = z.string().transform((options) => options.split(', '))
+const optionsToStringSchema = z.array(z.string()).transform((options) => options.join(', '))
+
 export default function SelectOne(props: SelectOneProps) {
   const [showOptions, setShowOptions] = useState(false)
+  const parseRes = optionsToArraySchema.safeParse(props.node.attrs.options)
+  const parsedOptions = parseRes.success ? parseRes.data : []
 
   return (
     <NodeViewWrapper>
       <Popover.Root open={showOptions} onOpenChange={setShowOptions}>
-        <Popover.Trigger onClick={() => setShowOptions(true)} className='rounded-lg border px-3 py-0.5 text-sm duration-100 hover:bg-zinc-300'>
-          {props.node.attrs.options[props.node.attrs.correctAnswer]}
+        <Popover.Trigger
+          onClick={() => setShowOptions(true)}
+          className={clsx('rounded-lg border px-3 py-0.5 text-sm duration-100 hover:bg-zinc-300', !parsedOptions[props.node.attrs.correctAnswer].trim() && 'animate-pulse')}
+        >
+          {parsedOptions[props.node.attrs.correctAnswer].trim() || '...'}
         </Popover.Trigger>
         <Popover.Content asChild align='start'>
           <article className='rounded-xl border bg-zinc-200 shadow'>
@@ -34,9 +39,9 @@ export default function SelectOne(props: SelectOneProps) {
               </button>
             </header>
             <ul className='my-2 grid grid-cols-[auto,1fr,auto] gap-x-2 px-2'>
-              {props.node.attrs.options.map((option, i) => {
+              {parsedOptions.map((option, i) => {
                 const selected = i === props.node.attrs.correctAnswer
-                const duplicate = props.node.attrs.options.filter((opt) => opt === option).length > 1
+                const duplicate = parsedOptions.filter((opt) => opt === option).length > 1
                 return (
                   <li key={i} className='col-span-full grid grid-cols-subgrid items-center'>
                     <button
@@ -56,18 +61,19 @@ export default function SelectOne(props: SelectOneProps) {
                     <input
                       type='text'
                       value={option}
+                      placeholder='Option'
                       onChange={(e) => {
                         props.updateAttributes({
-                          options: props.node.attrs.options.map((opt, index) => (index === i ? e.target.value : opt)),
+                          options: optionsToStringSchema.parse(parsedOptions.map((opt, index) => (index === i ? e.target.value : opt))),
                         })
                       }}
-                      className={clsx('w-full rounded-md px-2 py-1 text-sm', duplicate && 'font-medium text-rose-800')}
+                      className={clsx('w-full rounded-md px-2 py-1 text-sm placeholder:text-zinc-500', duplicate && 'font-medium text-rose-800')}
                     />
                     <button
-                      disabled={props.node.attrs.options.length === 1}
+                      disabled={parsedOptions.length === 1}
                       onClick={() => {
                         props.updateAttributes({
-                          options: props.node.attrs.options.filter((_, index) => i !== index),
+                          options: optionsToStringSchema.parse(parsedOptions.filter((_, index) => i !== index)),
                         })
                         props.updateAttributes({
                           correctAnswer: 0,
@@ -82,14 +88,14 @@ export default function SelectOne(props: SelectOneProps) {
               })}
             </ul>
             <div className='mx-2'>
-              {props.node.attrs.options.length !== new Set(props.node.attrs.options).size && (
+              {parsedOptions.length !== new Set(parsedOptions).size && (
                 <p className='mb-2 flex items-center gap-x-2 text-sm font-medium text-rose-800'>
                   <TbExclamationCircle /> Please remove duplicates
                 </p>
               )}
               <button
                 onClick={() => {
-                  props.updateAttributes({ options: [...props.node.attrs.options, 'New option'] })
+                  props.updateAttributes({ options: optionsToStringSchema.parse([...parsedOptions, 'New option']) })
                 }}
                 className='mb-2 w-full rounded-md border py-1 text-center text-sm duration-100 hover:bg-zinc-300'
               >

@@ -1,4 +1,5 @@
-import { route } from './utils'
+import { User } from '@prisma/client'
+import { route, StrictOmit } from './utils'
 
 export type Token = {
   id: number
@@ -9,10 +10,6 @@ export type AccountConfirmationToken = {
   email: string
 }
 
-export type AuthUser = Token
+export type AuthUser = StrictOmit<User, 'login' | 'password'>
 
-export const protectedRoutes = [
-  route('/home/courses'),
-  route('/home/groups'),
-  route('/home/tasks'),
-] as const satisfies string[]
+export const protectedRoutes = [route('/home/courses'), route('/home/groups'), route('/home/tasks')] as const satisfies string[]

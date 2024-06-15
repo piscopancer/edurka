@@ -1,9 +1,15 @@
 import { z } from 'zod'
 
-export function pagePathSchema<P extends z.ZodRawShape, SP extends z.ZodRawShape>(path: { paramsSchema?: P; searchParamsSchema?: SP }) {
+export function pagePathSchema<P extends z.ZodRawShape, SP extends z.ZodRawShape>({
+  paramsSchema = {} as P,
+  searchParamsSchema = {} as SP,
+}: {
+  paramsSchema?: P
+  searchParamsSchema?: SP
+}) {
   return z.object({
-    params: path.paramsSchema ? z.object(path.paramsSchema) : z.never(),
-    searchParams: path.searchParamsSchema ? z.object(path.searchParamsSchema).partial() : z.never(),
+    params: z.object(paramsSchema),
+    searchParams: z.object(searchParamsSchema).partial(),
   })
 }
 

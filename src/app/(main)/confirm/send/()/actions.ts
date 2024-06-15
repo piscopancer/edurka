@@ -1,12 +1,11 @@
 'use server'
 
-import { AccountConfirmationToken } from '@/auth'
+import { AccountConfirmationToken, AuthUser } from '@/auth'
 import { route } from '@/utils'
-import { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import nodemailer from 'nodemailer'
 
-async function _sendConfirmationEmail(user: User) {
+async function _sendConfirmationEmail(user: AuthUser) {
   const token = jwt.sign(
     {
       id: user.id,
@@ -38,6 +37,6 @@ async function _sendConfirmationEmail(user: User) {
   return res
 }
 
-export async function sendConfirmationEmail(user: User) {
+export async function sendConfirmationEmail(user: AuthUser) {
   return await _sendConfirmationEmail.bind(null, user)()
 }
