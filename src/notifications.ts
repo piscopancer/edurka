@@ -1,6 +1,7 @@
 import { $Enums, Prisma } from '@prisma/client'
 import { QueryClient } from '@tanstack/react-query'
 import { queryNotifications } from './actions/users'
+import { queryKeys } from './query'
 
 export type Notifications = Awaited<ReturnType<typeof queryNotifications>>[number]
 export type Notification<T extends $Enums.NotificationType> = Notifications & { type: T }
@@ -25,7 +26,7 @@ export function getSharedNotificationsFindManyArgs(receiverId: number) {
 
 export async function prefetchNotifications(queryClient: QueryClient, userId: number) {
   await queryClient.prefetchQuery({
-    queryKey: ['notifications', userId],
+    queryKey: queryKeys.notifications(userId),
     queryFn: () => queryNotifications(userId),
   })
 }

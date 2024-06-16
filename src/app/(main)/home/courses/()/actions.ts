@@ -71,3 +71,70 @@ async function _findGroups(search: string) {
 export async function findGroups({ search }: { search: string }) {
   return _findGroups.bind(null, search)()
 }
+
+export async function queryCreatedCourses(tutorId: number) {
+  return db.course.findMany({
+    where: {
+      tutorId,
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      works: {
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+        },
+      },
+      groups: {
+        select: {
+          _count: { select: { students: true } },
+          id: true,
+        },
+      },
+      students: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+}
+
+export async function queryParticipatedCourses(studentId: number) {
+  return db.course.findMany({
+    where: {
+      students: {
+        some: {
+          id: studentId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      addedToNotifications: {
+        select: {
+          id: true,
+        },
+      },
+      tutor: {
+        select: {
+          id: true,
+          name: true,
+          middlename: true,
+        },
+      },
+      works: {
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+        },
+      },
+    },
+  })
+}

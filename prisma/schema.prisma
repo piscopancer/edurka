@@ -84,37 +84,51 @@ model AddedToCourseNotification {
 }
 
 model Group {
-  id                  Int                        @id() @default(autoincrement())
-  title               String
-  createdAt           DateTime                   @default(now())
-  tutorId             Int
-  tutor               User                       @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
-  students            User[]                     @relation("participated-groups")
-  participatedCourses Course[]
-  addedToNotification AddedToGroupNotification[]
+  id                   Int                        @id() @default(autoincrement())
+  title                String
+  createdAt            DateTime                   @default(now())
+  tutorId              Int
+  tutor                User                       @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
+  students             User[]                     @relation("participated-groups")
+  participatedCourses  Course[]
+  addedToNotifications AddedToGroupNotification[]
 }
 
 model Course {
-  id                  Int                         @id() @default(autoincrement())
-  createdAt           DateTime                    @default(now())
-  title               String
-  description         String?
-  tutorId             Int
-  tutor               User                        @relation("created-courses", fields: [tutorId], references: [id], onDelete: Cascade)
-  groups              Group[]
-  works               Work[]                      @relation("courses-works")
-  students            User[]                      @relation("participated-courses")
-  addedToNotification AddedToCourseNotification[]
+  id                   Int                         @id() @default(autoincrement())
+  createdAt            DateTime                    @default(now())
+  title                String
+  description          String?
+  tutorId              Int
+  tutor                User                        @relation("created-courses", fields: [tutorId], references: [id], onDelete: Cascade)
+  groups               Group[]
+  works                Work[]                      @relation("courses-works")
+  students             User[]                      @relation("participated-courses")
+  addedToNotifications AddedToCourseNotification[]
+  worksStates          WorkState[]
+  attempts             Attempt[]
 }
 
 model Work {
-  id          Int       @id() @default(autoincrement())
+  id          Int         @id() @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime  @default(now())
-  inCourses   Course[]  @relation("courses-works")
-  tasks       Task[]    @relation("works-tasks")
+  createdAt   DateTime    @default(now())
+  inCourses   Course[]    @relation("courses-works")
+  tasks       Task[]      @relation("works-tasks")
   attempts    Attempt[]
+  states      WorkState[]
+  tasksStates TaskState[]
+}
+
+model WorkState {
+  enabledUntil DateTime?
+  workId       Int
+  work         Work      @relation(fields: [workId], references: [id], onDelete: Cascade)
+  courseId     Int
+  inCourse     Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([workId, courseId])
 }
 
 /// @@delegate(type)
@@ -127,11 +141,22 @@ model Task {
   tutorId                     Int
   tutor                       User            @relation("created-tasks", fields: [tutorId], references: [id], onDelete: Cascade)
   inWorks                     Work[]          @relation("works-tasks")
+  states                      TaskState[]
   delegate_aux_agreeTask      AgreeTask?
   delegate_aux_selectOneTask  SelectOneTask?
   delegate_aux_selectManyTask SelectManyTask?
   delegate_aux_fillGapsTask   FillGapsTask?
   delegate_aux_replyTask      ReplyTask?
+}
+
+model TaskState {
+  disabled Boolean?
+  taskId   Int
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  workId   Int
+  inWork   Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, workId])
 }
 
 model AgreeTask {
@@ -171,8 +196,10 @@ model Attempt {
   student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   workId    Int
   work      Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  @@id([studentId, workId])
+  @@id([studentId, workId, courseId])
 }
 
 /// @@delegate(type)

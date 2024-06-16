@@ -1,5 +1,6 @@
 import { QueryTestUsersFilter, auth, queryNotifications, queryTestUsers } from '@/actions/users'
 import { useQuery } from '@tanstack/react-query'
+import { queryKeys } from '.'
 
 export function useTestUsers(filter: QueryTestUsersFilter) {
   return useQuery({
@@ -12,7 +13,7 @@ export function useTestUsers(filter: QueryTestUsersFilter) {
 
 export function useAuthUser() {
   return useQuery({
-    queryKey: ['auth-user'],
+    queryKey: queryKeys.authUser,
     refetchInterval: 1000 * 60,
     queryFn: () => auth(),
     staleTime: 1000 * 60,
@@ -21,7 +22,7 @@ export function useAuthUser() {
 
 export function useNotifications(userId?: number) {
   return useQuery({
-    queryKey: ['notifications', userId],
+    queryKey: queryKeys.notifications(userId ?? -1),
     refetchInterval: 1000 * 60,
     queryFn: userId ? () => queryNotifications(userId) : () => [],
     staleTime: 1000 * 10,

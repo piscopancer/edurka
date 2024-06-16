@@ -20,6 +20,7 @@ model User {
   confirmed             Boolean        @default(false)
   admin                 Boolean        @default(false)
   tutor                 Boolean        @default(false)
+
   createdCourses        Course[]       @relation("created-courses")
   createdGroups         Group[]        @relation("created-groups")
   participatedGroups    Group[]        @relation("participated-groups")
@@ -39,6 +40,7 @@ model Notification {
   id         Int              @id @default(autoincrement())
   createdAt  DateTime         @default(now())
   type       NotificationType
+
   senderId   Int
   sender     User             @relation("user-notification-sent", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId Int
@@ -58,37 +60,55 @@ model AddedToCourseNotification  extends Notification {
 }
 
 model Group {
-  id                  Int                        @id @default(autoincrement())
-  title               String
-  createdAt           DateTime                   @default(now())
-  tutorId             Int
-  tutor               User                       @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
-  students            User[]                     @relation("participated-groups")
-  participatedCourses Course[]
-  addedToNotification AddedToGroupNotification[]
+  id                   Int                        @id @default(autoincrement())
+  title                String
+  createdAt            DateTime                   @default(now())
+
+  tutorId              Int
+  tutor                User                       @relation("created-groups", fields: [tutorId], references: [id], onDelete: Cascade)
+  students             User[]                     @relation("participated-groups")
+  participatedCourses  Course[]
+  addedToNotifications AddedToGroupNotification[]
 }
 
 model Course {
-  id                  Int                         @id @default(autoincrement())
-  createdAt           DateTime                    @default(now())
-  title               String
-  description         String?
-  tutorId             Int
-  tutor               User                        @relation("created-courses", fields: [tutorId], references: [id], onDelete: Cascade)
-  groups              Group[]
-  works               Work[]                      @relation("courses-works")
-  students            User[]                      @relation("participated-courses")
-  addedToNotification AddedToCourseNotification[]
+  id                   Int                         @id @default(autoincrement())
+  createdAt            DateTime                    @default(now())
+  title                String
+  description          String?
+
+  tutorId              Int
+  tutor                User                        @relation("created-courses", fields: [tutorId], references: [id], onDelete: Cascade)
+  groups               Group[]
+  works                Work[]                      @relation("courses-works")
+  students             User[]                      @relation("participated-courses")
+  addedToNotifications AddedToCourseNotification[]
+  worksStates          WorkState[]
+  attempts             Attempt[]
 }
 
 model Work {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime  @default(now())
-  inCourses   Course[]  @relation("courses-works")
-  tasks       Task[]    @relation("works-tasks")
+  createdAt   DateTime    @default(now())
+
+  inCourses   Course[]    @relation("courses-works")
+  tasks       Task[]      @relation("works-tasks")
   attempts    Attempt[]
+  states      WorkState[]
+  tasksStates TaskState[]
+}
+
+model WorkState {
+  enabledUntil DateTime?
+
+  workId       Int
+  work         Work      @relation(fields: [workId], references: [id], onDelete: Cascade)
+  courseId     Int
+  inCourse     Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([workId, courseId])
 }
 
 enum TaskType {
@@ -100,16 +120,28 @@ enum TaskType {
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
+  id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
   title       String
   description String?
   type        TaskType
   tutorId     Int
-  tutor       User     @relation("created-tasks", fields: [tutorId], references: [id], onDelete: Cascade)
-  inWorks     Work[]   @relation("works-tasks")
+  tutor       User        @relation("created-tasks", fields: [tutorId], references: [id], onDelete: Cascade)
+  inWorks     Work[]      @relation("works-tasks")
+  states      TaskState[]
 
   @@delegate(type)
+}
+
+model TaskState {
+  disabled Boolean?
+
+  taskId   Int
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  workId   Int
+  inWork   Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, workId])
 }
 
 model AgreeTask extends Task {
@@ -140,8 +172,10 @@ model Attempt {
   student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   workId    Int
   work      Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  @@id([studentId,workId])
+  @@id([studentId, workId, courseId])
 }
 
 enum AnswerType {

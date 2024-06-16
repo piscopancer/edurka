@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ComponentProps, useRef } from 'react'
-import { TbBell, TbFlag, TbInboxOff, TbLoader, TbLogout, TbSchool, TbSelector } from 'react-icons/tb'
+import { TbFlag, TbInbox, TbInboxOff, TbLoader, TbLogout, TbSchool, TbSelector } from 'react-icons/tb'
 import { useSnapshot } from 'valtio'
 import { toggleTutor } from './actions'
 import { headerStore } from './client'
@@ -59,14 +59,15 @@ export default function Header({ tutorMode, ...props }: ComponentProps<'header'>
         )}
         {notificationsQuery?.data && (
           <Popover.Root>
-            <Popover.Trigger className='self-stretch rounded-full border border-transparent px-4 hover:border-inherit'>
-              <TbBell className='size-5' />
+            <Popover.Trigger className='hopper self-stretch rounded-full border border-transparent px-4 hover:border-inherit'>
+              <TbInbox className='size-5 place-self-center' />
+              {notificationsQuery.data.length > 0 && <div className='size-3 translate-x-2 translate-y-2 place-self-center rounded-full border-2 border-zinc-200 bg-accent' />}
             </Popover.Trigger>
             <Popover.Content sideOffset={4} align='end' className='flex h-screen max-h-[60vh] w-96 max-w-[100vw] flex-col rounded-xl border bg-zinc-200 shadow max-md:w-auto'>
               <header className='border-b px-4 py-2'>
                 <h2>Notifications</h2>
               </header>
-              {notificationsQuery.data.length ? (
+              {notificationsQuery.data.length > 0 ? (
                 <ul>
                   {notificationsQuery.data.map((ntf) => (
                     <li key={ntf.id} className='border-dashed px-4 py-2 not-[:last-child]:border-b'>
@@ -92,7 +93,7 @@ export default function Header({ tutorMode, ...props }: ComponentProps<'header'>
               await toggleTutorMutation.mutateAsync(!tutorMode)
               router.refresh()
             }}
-            className='flex items-center gap-x-2 rounded-full border py-1 pl-4 pr-3 shadow duration-100 disabled:opacity-50'
+            className='flex items-center gap-x-2 rounded-full border border-transparent py-1 pl-4 pr-3 hover:border-inherit disabled:opacity-50'
           >
             {tutorMode ? 'Tutor' : 'Student'}
             {toggleTutorMutation.isPending ? <TbLoader className='animate-spin' /> : <TbSelector />}

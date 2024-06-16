@@ -3,6 +3,7 @@ import '@/assets/style.scss'
 import { hasCookie } from '@/cookies'
 import { prefetchNotifications } from '@/notifications'
 import { project } from '@/project'
+import { queryKeys } from '@/query'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import type { Metadata } from 'next'
 import Footer from './()/footer'
@@ -20,7 +21,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   if (authUser) {
     await prefetchNotifications(queryClient, authUser.id)
     await queryClient.prefetchQuery({
-      queryKey: ['auth-user'],
+      queryKey: queryKeys.authUser,
       queryFn: () => auth(),
       initialData: authUser,
     })

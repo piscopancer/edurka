@@ -14,7 +14,7 @@ export default async function GroupsPage() {
   }
   const tutorMode = (await hasCookie('tutor')) && authUser.tutor
 
-  const groups = tutorMode ? await queryCreatedGroups(authUser) : await queryParticipatedGroups(authUser)
+  const groups = tutorMode ? await queryCreatedGroups(authUser.id) : await queryParticipatedGroups(authUser.id)
 
   return (
     <main className=''>
