@@ -11,7 +11,7 @@ export function objectEntries<O extends object>(obj?: O) {
   return Object.entries(obj ?? {}) as [keyof O, O[keyof O]][]
 }
 
-export type StrictOmit<T extends { [K in string]: unknown }, K extends keyof T> = Omit<T, K>
+export type StrictOmit<T extends { [K in keyof object]: unknown }, K extends keyof T> = Omit<T, K>
 
 export async function wait(seconds: number) {
   return new Promise((res) => setTimeout(res, seconds * 1000))

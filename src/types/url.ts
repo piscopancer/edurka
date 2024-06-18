@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export function pagePathSchema<P extends z.ZodRawShape, SP extends z.ZodRawShape>({
+export function pageUrlSchema<P extends z.ZodRawShape, SP extends z.ZodRawShape>({
   paramsSchema = {} as P,
   searchParamsSchema = {} as SP,
 }: {

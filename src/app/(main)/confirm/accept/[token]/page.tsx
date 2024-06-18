@@ -1,12 +1,12 @@
 import { db } from '#/prisma'
 import { AccountConfirmationToken, Token } from '@/auth'
-import { pagePathSchema } from '@/types/path'
+import { pageUrlSchema } from '@/types/url'
 import jwt from 'jsonwebtoken'
 import Link from 'next/link'
 import { TbCheck } from 'react-icons/tb'
 import { z } from 'zod'
 
-const pathPathSchema = pagePathSchema({
+const pathPathSchema = pageUrlSchema({
   paramsSchema: {
     token: z.string().min(1),
   },

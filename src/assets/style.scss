@@ -3,25 +3,14 @@
 @tailwind utilities;
 @tailwind variants;
 
-// .bg {
-//   background: radial-gradient(#000 20%, transparent 20%) 0 0;
-//   background-size: 5px 5px;
-//   animation: a infinite 5s linear;
-// }
-
-// @keyframes a {
-//   to {
-//     background-position: 10px 10px;
-//   }
-// }
-
 * {
   @apply border-zinc-800;
 }
 ::selection {
   @apply bg-zinc-900 text-zinc-200;
 }
-input {
+input,
+textarea {
   @apply bg-[unset] caret-accent outline-none;
 }
 html {
@@ -29,6 +18,7 @@ html {
     @apply h-0 w-0;
   }
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 svg {
   @apply inline-block size-auto shrink-0 stroke-[1.5] align-middle;

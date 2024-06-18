@@ -1,33 +1,44 @@
 'use client'
 
 import Search from '@/components/search'
-import useUrl from '@/hooks/use-url'
-import { objectEntries, route } from '@/utils'
+import { useDebounce } from '@/hooks/use-debounce'
+import { useAuthUser } from '@/query/hooks'
 import * as Popover from '@radix-ui/react-popover'
 import clsx from 'clsx'
 import { ComponentProps, useState } from 'react'
-import { coursesPagePathSchema, defaultOrder, defaultSorting, getSortingOptions } from '.'
+import { defaultOrder, defaultSorting, getFilteredSortingOptions, sortingOptions, useCoursesPageUrl } from '.'
 
-export default function FilterPanel({ ...props }: ComponentProps<'aside'> & {}) {
-  const url = useUrl(route('/home/courses'), coursesPagePathSchema)
+export default function FilterPanel({ tutorMode, ...props }: ComponentProps<'aside'> & { tutorMode: boolean }) {
+  const url = useCoursesPageUrl()
   const [search, setSearch] = useState(url.sp.get('search'))
   const sorting = url.sp.get('sorting') ?? defaultSorting
   const order = url.sp.get('order') ?? defaultOrder
-  const OrderIcon = getSortingOptions()[sorting].orders[order].icon
+  const OrderIcon = sortingOptions[sorting].orders[order].icon
+  const searchDebouncer = useDebounce({
+    callback(search: string) {
+      setSearch(search)
+      url.sp.write('search', search.trim())
+    },
+    seconds: 0.7,
+  })
+  const authUserQuery = useAuthUser()
+  if (!authUserQuery.data) return null
+  // const findParticipantsQuery = useQuery({
+  //   queryFn: () => findParticipants(search),
+  //   queryKey: ['found-participants'],
+  //   enabled: !!createCourseSnap.participantsSearch,
+  // })
 
   return (
     <aside {...props}>
       <div className='flex gap-2'>
         <Search
-          change={(value) => {
-            setSearch(value)
-            url.sp.write('search', value.trim())
-          }}
+          change={searchDebouncer.call}
           clear={() => {
             setSearch(undefined)
             url.sp.write('search', undefined)
           }}
-          value={search}
+          defaultValue={search}
           className='mr-auto'
         />
         <Popover.Root>
@@ -37,8 +48,8 @@ export default function FilterPanel({ ...props }: ComponentProps<'aside'> & {}) 
           <Popover.Portal>
             <Popover.Content align='end' sideOffset={4} className='rounded-xl border bg-zinc-200 shadow'>
               <ul className='py-2'>
-                {objectEntries(getSortingOptions()).map(([_sorting, { title, orders }], i) => {
-                  const Icon = getSortingOptions()[sorting].orders[order].icon
+                {getFilteredSortingOptions(tutorMode).map(([_sorting, option], i) => {
+                  const Icon = option.orders[order].icon
                   return (
                     <li key={i} className='contents'>
                       <button
@@ -55,8 +66,8 @@ export default function FilterPanel({ ...props }: ComponentProps<'aside'> & {}) 
                         )}
                       >
                         <Icon className={clsx('row-span-2 size-6 self-center', sorting === _sorting ? '' : 'invisible')} />
-                        <span className='justify-self-start'>{title}</span>
-                        <span className='justify-self-start text-xs'>{orders[url.sp.get('order') ?? 'desc'].description}</span>
+                        <span className='justify-self-start'>{option.title}</span>
+                        <span className='justify-self-start text-xs'>{option.orders[url.sp.get('order') ?? 'desc'].description}</span>
                       </button>
                     </li>
                   )

@@ -1,7 +1,5 @@
-import { accentColor } from '@/utils'
 import clsx from 'clsx'
 import { animate, HTMLMotionProps, motion, useMotionValue } from 'framer-motion'
-import colors from 'tailwindcss/colors'
 
 export default function Switch({ action, enabled, ...htmlProps }: HTMLMotionProps<'button'> & { enabled: boolean; action: (current: boolean) => Promise<boolean> | boolean }) {
   const knobScaleYMv = useMotionValue(1)
@@ -18,7 +16,6 @@ export default function Switch({ action, enabled, ...htmlProps }: HTMLMotionProp
       animate={
         enabled
           ? {
-              backgroundColor: accentColor,
               x: [0, 5, 0],
               transition: {
                 x: {
@@ -27,9 +24,7 @@ export default function Switch({ action, enabled, ...htmlProps }: HTMLMotionProp
                 },
               },
             }
-          : {
-              backgroundColor: colors.zinc[300],
-            }
+          : {}
       }
       onPointerDown={() => {
         animate(knobScaleYMv, 0.9, { type: 'spring' })
@@ -37,14 +32,11 @@ export default function Switch({ action, enabled, ...htmlProps }: HTMLMotionProp
       onPointerUp={() => {
         animate(knobScaleYMv, 1, { type: 'spring' })
       }}
-      className={clsx(htmlProps.className, enabled ? 'justify-end' : 'justify-start', 'flex h-8 w-12 rounded-full p-1')}
+      className={clsx(htmlProps.className, enabled ? 'justify-end border-accent bg-accent' : 'justify-start', 'flex h-8 w-12 items-center rounded-full border p-1')}
     >
       <motion.div
         layout
         initial={false}
-        animate={{
-          backgroundColor: enabled ? colors.zinc[100] : colors.zinc[200],
-        }}
         style={{
           scaleY: knobScaleYMv,
         }}
@@ -53,7 +45,7 @@ export default function Switch({ action, enabled, ...htmlProps }: HTMLMotionProp
             duration: 0.1,
           },
         }}
-        className={clsx('aspect-square h-6 rounded-full')}
+        className={clsx('aspect-square h-6 rounded-full border bg-zinc-200', enabled && 'border-zinc-200')}
       />
     </motion.button>
   )

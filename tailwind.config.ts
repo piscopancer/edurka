@@ -28,16 +28,30 @@ export const config: Config = {
     },
   },
   plugins: [
-    plugin(({ addComponents, matchVariant }) => {
-      addComponents({
-        '.hopper': {
-          display: 'grid',
-          gridTemplateAreas: '"hopper"',
-          '& > *': {
-            gridArea: 'hopper',
+    plugin(({ addComponents, matchVariant, theme }) => {
+      addComponents([
+        {
+          '.hopper': {
+            display: 'grid',
+            gridTemplateAreas: '"hopper"',
+            '& > *': {
+              gridArea: 'hopper',
+            },
           },
         },
-      }),
+        {
+          '.bg-halftone': {
+            background: `radial-gradient(${theme('colors.zinc.900')} 20%, transparent 20%) 0 0`,
+            backgroundSize: '.5vmin .5vmin',
+            animation: 'slide infinite 5s linear',
+            '@keyframes slide': {
+              to: {
+                backgroundPosition: '1vmin .5vmin',
+              },
+            },
+          },
+        },
+      ]),
         matchVariant('not', (v) => `&:not(${v})`)
     }),
     // Container queries plugin modified for "@max-*", source: https://github.com/tailwindlabs/tailwindcss-container-queries.

@@ -1,14 +1,16 @@
 'use client'
 
 import { proxy } from 'valtio'
+import { findParticipants, findWorks } from './actions'
 
 export const createCourseStore = proxy({
   title: '',
   description: '',
-  groupsIds: [] as number[],
-  showIncludedGroups: false,
-  studentsIds: [] as number[],
-  showIncludedStudents: false,
-  worksIds: [] as number[],
+  participantsSearch: '',
+  includedWorks: [] as Awaited<ReturnType<typeof findWorks>>,
   showIncludedWorks: false,
+  includedGroups: [] as Awaited<ReturnType<typeof findParticipants>>['groups'],
+  showIncludedGroups: false,
+  includedStudents: [] as Awaited<ReturnType<typeof findParticipants>>['students'],
+  showIncludedStudents: false,
 })

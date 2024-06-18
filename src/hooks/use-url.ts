@@ -1,11 +1,11 @@
 'use client'
 
-import { pagePathSchema } from '@/types/path'
+import { pageUrlSchema } from '@/types/url'
 import { Route } from 'next'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 
-export default function useUrl<PageSchema extends ReturnType<typeof pagePathSchema>>(path: string, pageSchema: PageSchema) {
+export default function useUrl<PageSchema extends ReturnType<typeof pageUrlSchema>>(path: string, pageSchema: PageSchema) {
   type Page = z.infer<PageSchema>
   const nextSP = useSearchParams()
   const router = useRouter()
