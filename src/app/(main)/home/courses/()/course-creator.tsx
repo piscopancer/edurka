@@ -1,7 +1,5 @@
 'use client'
 
-import { createCourse } from '@/actions/courses'
-import { AuthUser } from '@/auth'
 import Search from '@/components/search'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useAuthUser } from '@/query/hooks'
@@ -14,12 +12,15 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ComponentProps, useEffect, useId, useRef, useState } from 'react'
 import { TbLoader, TbPlus, TbUser, TbX } from 'react-icons/tb'
 import { useSnapshot } from 'valtio'
-import { findParticipants } from './actions'
+import { createCourse, findParticipants } from './actions'
 import { createCourseStore } from './store'
 
-export default function CourseCreator({ authUser }: { authUser: AuthUser }) {
+export default function CourseCreator() {
+  const { data: authUser } = useAuthUser()
   const [open, setOpen] = useState(false)
   const createCourseMutation = useMutation({ mutationFn: createCourse })
+
+  if (!authUser) return
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>

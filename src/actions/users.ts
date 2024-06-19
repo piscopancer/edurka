@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-async function _signIn(credentials: Pick<Prisma.UserCreateInput, 'login' | 'password'>) {
+export async function signIn(credentials: Pick<Prisma.UserCreateInput, 'login' | 'password'>) {
   const existingUser = await db.user.findFirst({
     where: { login: credentials.login },
   })
@@ -31,9 +31,6 @@ async function _signIn(credentials: Pick<Prisma.UserCreateInput, 'login' | 'pass
     })
     redirect(route('/home/courses'))
   }
-}
-export async function signIn(credentials: { login: string; password: string }) {
-  return _signIn.bind(null, credentials)()
 }
 
 export async function auth(): Promise<AuthUser | null> {

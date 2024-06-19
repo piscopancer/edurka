@@ -71,14 +71,14 @@ model Notification {
 
 model AddedToGroupNotification {
   id                        Int          @id()
-  groupId                   Int
+  groupId                   Int          @unique()
   group                     Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
   delegate_aux_notification Notification @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model AddedToCourseNotification {
   id                        Int          @id()
-  courseId                  Int
+  courseId                  Int          @unique()
   course                    Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   delegate_aux_notification Notification @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

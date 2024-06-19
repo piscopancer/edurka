@@ -171,3 +171,43 @@ export async function queryParticipatedCourses(studentId: number, filters: Cours
     },
   })
 }
+
+export async function createCourse(props: { tutorId: number; title: string; groupsIds: number[]; studentsIds: number[]; worksIds: number[] }) {
+  const newCourse = await db.course.create({
+    data: {
+      title: props.title,
+      // description JSON TIPTAP
+      tutorId: props.tutorId,
+      ...(props.groupsIds.length
+        ? {
+            groups: {
+              connect: props.groupsIds.map((id) => ({ id })),
+            },
+          }
+        : {}),
+      ...(props.worksIds.length
+        ? {
+            works: {
+              connect: props.worksIds.map((id) => ({ id })),
+            },
+          }
+        : {}),
+      ...(props.studentsIds.length
+        ? {
+            students: {
+              connect: props.studentsIds.map((id) => ({ id })),
+            },
+          }
+        : {}),
+      addedToNotifications: {
+        createMany: {
+          data: props.studentsIds.map((id) => ({
+            receiverId: 1,
+            senderId: props.tutorId,
+          })),
+        },
+      },
+    },
+  })
+  return newCourse
+}

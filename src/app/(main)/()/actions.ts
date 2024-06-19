@@ -2,14 +2,12 @@
 
 import { deleteCookie, setCookie } from '@/cookies'
 
-async function _toggleTutor(value: boolean) {
+export async function toggleTutor(value: boolean) {
   if (value) {
     await setCookie('tutor', true)
+    return true
   } else {
     await deleteCookie('tutor')
+    return false
   }
-}
-
-export async function toggleTutor(value: boolean) {
-  return _toggleTutor.bind(null, value)()
 }

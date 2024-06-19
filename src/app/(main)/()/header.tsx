@@ -2,13 +2,14 @@
 
 import { signIn, signOut } from '@/actions/users'
 import Notification from '@/components/notification'
-import { useAuthUser, useNotifications } from '@/query/hooks'
+import { queryKeys } from '@/query'
+import { useAuthUser, useNotifications, useTutorMode } from '@/query/hooks'
 import { route } from '@/utils'
 import * as Popover from '@radix-ui/react-popover'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { ComponentProps, useRef } from 'react'
 import { TbFlag, TbInbox, TbInboxOff, TbLoader, TbLogout, TbSchool, TbSelector } from 'react-icons/tb'
 import { useSnapshot } from 'valtio'
@@ -29,14 +30,20 @@ function getRoutes({ tutorMode }: { tutorMode: boolean }) {
   return routes
 }
 
-export default function Header({ tutorMode, ...props }: ComponentProps<'header'> & { tutorMode: boolean }) {
+export default function Header({ ...props }: ComponentProps<'header'>) {
+  const qc = useQueryClient()
   const path = usePathname()
   const headerSnap = useSnapshot(headerStore)
-  const toggleTutorMutation = useMutation({ mutationFn: toggleTutor })
-  const router = useRouter()
-  const routes = getRoutes({ tutorMode })
+  const tutorModeQuery = useTutorMode()
   const authUserQuery = useAuthUser()
-  const notificationsQuery = useNotifications(authUserQuery.data?.id)
+  const toggleTutorMutation = useMutation({
+    mutationFn: toggleTutor,
+    onMutate(data) {
+      qc.setQueryData<boolean>(queryKeys.tutorMode(authUserQuery.data?.id), data)
+    },
+  })
+  const routes = getRoutes({ tutorMode: !!tutorModeQuery.data })
+  const notificationsQuery = useNotifications()
   const signOutMutation = useMutation({
     mutationFn: signOut,
     onSuccess: async () => {
@@ -89,13 +96,12 @@ export default function Header({ tutorMode, ...props }: ComponentProps<'header'>
         {authUserQuery.data?.tutor && (
           <button
             disabled={toggleTutorMutation.isPending}
-            onClick={async () => {
-              await toggleTutorMutation.mutateAsync(!tutorMode)
-              router.refresh()
+            onClick={() => {
+              toggleTutorMutation.mutate(!tutorModeQuery.data)
             }}
             className='flex items-center gap-x-2 rounded-full border border-transparent py-1 pl-4 pr-3 hover:border-inherit disabled:opacity-50'
           >
-            {tutorMode ? 'Tutor' : 'Student'}
+            {tutorModeQuery.data ? 'Tutor' : 'Student'}
             {toggleTutorMutation.isPending ? <TbLoader className='animate-spin' /> : <TbSelector />}
           </button>
         )}

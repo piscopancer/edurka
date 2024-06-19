@@ -35,6 +35,7 @@
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.40.1",
+    "@tanstack/react-query-devtools": "^5.45.1",
     "@tiptap/extension-text-align": "^2.4.0",
     "@tiptap/react": "^2.4.0",
     "@types/bcrypt": "^5.0.2",

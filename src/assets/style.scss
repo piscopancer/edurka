@@ -18,7 +18,6 @@ html {
     @apply h-0 w-0;
   }
   scroll-behavior: smooth;
-  scrollbar-gutter: stable;
 }
 svg {
   @apply inline-block size-auto shrink-0 stroke-[1.5] align-middle;

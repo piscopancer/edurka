@@ -12,8 +12,8 @@ export function useCreatedCourses() {
   const url = useCoursesPageUrl()
 
   return useQuery({
-    queryKey: queryKeys.createdCourses(tutorId ?? -1),
-    queryFn: () => queryCreatedCourses(tutorId ?? -1, url.sp.getAll()),
+    queryKey: queryKeys.createdCourses(tutorId),
+    queryFn: async () => (tutorId ? await queryCreatedCourses(tutorId, url.sp.getAll()) : []),
     enabled: tutorId !== undefined,
   })
 }
@@ -24,8 +24,8 @@ export function useParticipatedCourses() {
   const url = useCoursesPageUrl()
 
   return useQuery({
-    queryKey: queryKeys.participatedCourses(studentId ?? -1),
-    queryFn: () => queryParticipatedCourses(studentId ?? -1, url.sp.getAll()),
+    queryKey: queryKeys.participatedCourses(studentId),
+    queryFn: async () => (studentId ? await queryParticipatedCourses(studentId, url.sp.getAll()) : []),
     enabled: studentId !== undefined,
   })
 }

@@ -2,14 +2,15 @@
 
 import Search from '@/components/search'
 import { useDebounce } from '@/hooks/use-debounce'
-import { useAuthUser } from '@/query/hooks'
+import { useAuthUser, useTutorMode } from '@/query/hooks'
 import * as Popover from '@radix-ui/react-popover'
 import clsx from 'clsx'
 import { ComponentProps, useState } from 'react'
 import { defaultOrder, defaultSorting, getFilteredSortingOptions, sortingOptions, useCoursesPageUrl } from '.'
 
-export default function FilterPanel({ tutorMode, ...props }: ComponentProps<'aside'> & { tutorMode: boolean }) {
+export default function FilterPanel({ ...props }: ComponentProps<'aside'>) {
   const url = useCoursesPageUrl()
+  const { data: tutorMode } = useTutorMode()
   const [search, setSearch] = useState(url.sp.get('search'))
   const sorting = url.sp.get('sorting') ?? defaultSorting
   const order = url.sp.get('order') ?? defaultOrder
@@ -23,11 +24,6 @@ export default function FilterPanel({ tutorMode, ...props }: ComponentProps<'asi
   })
   const authUserQuery = useAuthUser()
   if (!authUserQuery.data) return null
-  // const findParticipantsQuery = useQuery({
-  //   queryFn: () => findParticipants(search),
-  //   queryKey: ['found-participants'],
-  //   enabled: !!createCourseSnap.participantsSearch,
-  // })
 
   return (
     <aside {...props}>
@@ -48,7 +44,7 @@ export default function FilterPanel({ tutorMode, ...props }: ComponentProps<'asi
           <Popover.Portal>
             <Popover.Content align='end' sideOffset={4} className='rounded-xl border bg-zinc-200 shadow'>
               <ul className='py-2'>
-                {getFilteredSortingOptions(tutorMode).map(([_sorting, option], i) => {
+                {getFilteredSortingOptions(!!tutorMode).map(([_sorting, option], i) => {
                   const Icon = option.orders[order].icon
                   return (
                     <li key={i} className='contents'>

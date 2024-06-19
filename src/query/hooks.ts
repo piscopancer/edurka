@@ -1,5 +1,7 @@
 import { QueryTestUsersFilter, auth, queryNotifications, queryTestUsers } from '@/actions/users'
-import { useQuery } from '@tanstack/react-query'
+import { AuthUser } from '@/auth'
+import { getCookie } from '@/cookies'
+import { QueryClient, useQuery } from '@tanstack/react-query'
 import { queryKeys } from '.'
 
 export function useTestUsers(filter: QueryTestUsersFilter) {
@@ -20,12 +22,33 @@ export function useAuthUser() {
   })
 }
 
-export function useNotifications(userId?: number) {
+export function getAuthUser(qc: QueryClient) {
+  return qc.getQueryData<AuthUser>(queryKeys.authUser)
+}
+
+export function getTutorMode(qc: QueryClient) {
+  const authUser = getAuthUser(qc)
+  return qc.getQueryData<AuthUser>(queryKeys.tutorMode(authUser?.id))
+}
+
+export function useTutorMode() {
+  const authUser = useAuthUser()
+
   return useQuery({
-    queryKey: queryKeys.notifications(userId ?? -1),
+    queryKey: queryKeys.tutorMode(authUser.data?.id),
+    queryFn: async () => (await getCookie('tutor')) && authUser.data?.tutor,
+    enabled: !!authUser.data,
+  })
+}
+
+export function useNotifications() {
+  const authUser = useAuthUser()
+
+  return useQuery({
+    queryKey: queryKeys.notifications(authUser.data?.id ?? -1),
     refetchInterval: 1000 * 60,
-    queryFn: userId ? () => queryNotifications(userId) : () => [],
+    queryFn: authUser.data && authUser.data.id ? () => queryNotifications(authUser.data!.id) : () => [],
     staleTime: 1000 * 10,
-    enabled: userId !== undefined,
+    enabled: authUser.data?.id !== undefined,
   })
 }

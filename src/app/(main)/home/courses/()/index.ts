@@ -19,10 +19,10 @@ export type CoursesPageFilters = z.infer<typeof coursesPageUrlSchema>['searchPar
 
 export const coursesPageUrlSchema = pageUrlSchema({
   searchParamsSchema: {
-    search: z.string().min(1),
+    search: z.string().min(1).optional().catch(undefined),
     sorting: sortingSchema.catch(defaultSorting),
     order: orderSchema.catch(defaultOrder),
-    hideCompletedWorks: z.boolean(),
+    hideCompletedWorks: z.boolean().catch(false),
   },
 })
 
