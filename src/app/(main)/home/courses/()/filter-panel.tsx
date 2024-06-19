@@ -2,7 +2,7 @@
 
 import Search from '@/components/search'
 import { useDebounce } from '@/hooks/use-debounce'
-import { useAuthUser, useTutorMode } from '@/query/hooks'
+import { useTutorMode } from '@/query/hooks'
 import * as Popover from '@radix-ui/react-popover'
 import clsx from 'clsx'
 import { ComponentProps, useState } from 'react'
@@ -22,8 +22,6 @@ export default function FilterPanel({ ...props }: ComponentProps<'aside'>) {
     },
     seconds: 0.7,
   })
-  const authUserQuery = useAuthUser()
-  if (!authUserQuery.data) return null
 
   return (
     <aside {...props}>

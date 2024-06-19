@@ -24,7 +24,7 @@ export function useParticipatedGroups() {
   const url = useGroupsPageUrl()
 
   return useQuery({
-    queryKey: queryKeys.createdGroups(studentId),
+    queryKey: queryKeys.participatedGroups(studentId),
     queryFn: async () => (studentId ? await queryParticipatedGroups(studentId, url.sp.getAll()) : []),
     enabled: studentId !== undefined,
   })

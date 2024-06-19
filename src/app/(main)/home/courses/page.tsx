@@ -13,7 +13,6 @@ export default async function CoursesPage(url: unknown) {
   if (!parseRes.success) {
     return 'Invalid path'
   }
-  // const qc = new QueryClient()
   const authUser = getAuthUser(qc)
   const tutorMode = getTutorMode(qc)
   if (tutorMode) {
@@ -27,7 +26,6 @@ export default async function CoursesPage(url: unknown) {
       queryFn: async () => (authUser ? await queryParticipatedCourses(authUser.id, parseRes.data.searchParams) : []),
     })
   }
-  console.log('pref courses', qc.getQueryData(queryKeys.createdCourses(authUser?.id)))
 
   return (
     <HydrationBoundary state={dehydrate(qc)}>
