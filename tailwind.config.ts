@@ -10,11 +10,12 @@ export const config: Config = {
     },
     boxShadow: ({ theme }) => ({
       DEFAULT: `0 4px 0 ${theme('colors.zinc.900/0.1')}`,
-      key: `0 1px 0 2px ${theme('colors.zinc.400')}`,
+      key: `0 1px 0 2px currentColor`,
     }),
     extend: {
       colors: ({ colors }) => ({
         accent: colors.sky[500],
+        'accent-dark': colors.sky[800],
       }),
       keyframes: {
         float: {

@@ -173,41 +173,71 @@ export async function queryParticipatedCourses(studentId: number, filters: Cours
 }
 
 export async function createCourse(props: { tutorId: number; title: string; groupsIds: number[]; studentsIds: number[]; worksIds: number[] }) {
-  const newCourse = await db.course.create({
-    data: {
-      title: props.title,
-      // description JSON TIPTAP
-      tutorId: props.tutorId,
-      ...(props.groupsIds.length
-        ? {
-            groups: {
-              connect: props.groupsIds.map((id) => ({ id })),
+  const createdCourse = await db.$transaction(async (ctx) => {
+    const studentsIdsFromGroups = [
+      ...new Set(
+        await ctx.group
+          .findMany({
+            where: {
+              id: {
+                in: props.groupsIds,
+              },
             },
-          }
-        : {}),
-      ...(props.worksIds.length
-        ? {
-            works: {
-              connect: props.worksIds.map((id) => ({ id })),
+            select: {
+              students: {
+                select: {
+                  id: true,
+                },
+              },
             },
-          }
-        : {}),
-      ...(props.studentsIds.length
-        ? {
-            students: {
-              connect: props.studentsIds.map((id) => ({ id })),
-            },
-          }
-        : {}),
-      addedToNotifications: {
-        createMany: {
-          data: props.studentsIds.map((id) => ({
-            receiverId: 1,
-            senderId: props.tutorId,
-          })),
+          })
+          .then((groups) =>
+            groups
+              .map((group) => group.students)
+              .flat(1)
+              .map((student) => student.id),
+          ),
+      ),
+    ]
+
+    const course = await ctx.course.create({
+      data: {
+        title: props.title,
+        // description JSON TIPTAP
+        tutorId: props.tutorId,
+        ...(props.groupsIds.length
+          ? {
+              groups: {
+                connect: props.groupsIds.map((id) => ({ id })),
+              },
+            }
+          : {}),
+        ...(props.worksIds.length
+          ? {
+              works: {
+                connect: props.worksIds.map((id) => ({ id })),
+              },
+            }
+          : {}),
+        ...(props.studentsIds.length
+          ? {
+              students: {
+                connect: props.studentsIds.map((id) => ({ id })),
+              },
+            }
+          : {}),
+        addedToNotifications: {
+          createMany: {
+            data: [...new Set([...props.studentsIds, ...studentsIdsFromGroups])].map((id) => ({
+              receiverId: id,
+              senderId: props.tutorId,
+            })),
+          },
         },
       },
-    },
+    })
+    return course
   })
-  return newCourse
+
+  return createdCourse
 }

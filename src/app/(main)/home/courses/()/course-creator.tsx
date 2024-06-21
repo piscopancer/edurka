@@ -1,6 +1,7 @@
 'use client'
 
 import Search from '@/components/search'
+import BasicEditor from '@/components/tiptap/basic-editor'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useAuthUser } from '@/query/hooks'
 import { formatDate } from '@/utils'
@@ -123,7 +124,8 @@ function CourseForm({ tutorId, ...props }: ComponentProps<'article'> & Pick<Cour
             out a plan of the course and provide external links to useful sources.
           </span>
         </label>
-        <textarea id={descriptionId} className='min-h-[3lh] w-full rounded-lg border px-4 py-2 shadow' />
+        {/* <textarea id={descriptionId} className='min-h-[3lh] w-full rounded-lg border px-4 py-2 shadow' /> */}
+        <BasicEditor />
       </fieldset>
       <fieldset>
         <label htmlFor={findParicipantsId} className='mb-2 block'>

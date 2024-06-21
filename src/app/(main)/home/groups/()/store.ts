@@ -2,13 +2,15 @@ import { proxy } from 'valtio'
 
 export const tabs = [
   { id: 'all-students', title: 'All students' },
-  { id: 'add-a-student', title: 'Add a student' },
+  { id: 'add-students', title: 'Add students' },
 ] as const satisfies { id: string; title: string }[]
 
 type GroupStore = {
   tab: (typeof tabs)[number]['id']
+  search: string
 }
 
 export const groupStore = proxy<GroupStore>({
   tab: 'all-students',
+  search: '',
 })

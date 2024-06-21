@@ -49,3 +49,58 @@ export async function queryParticipatedGroups(studentId: number, filter: GroupsP
     select: { ...sharedSelect },
   })
 }
+
+export async function queryStudents(tutorId: number, search: string) {
+  return db.user.findMany({
+    where: {
+      NOT: {
+        id: tutorId,
+      },
+      OR: [{ name: { contains: search, mode: 'insensitive' } }, { surname: { contains: search, mode: 'insensitive' } }, { middlename: { contains: search, mode: 'insensitive' } }],
+    },
+    select: {
+      id: true,
+      name: true,
+      surname: true,
+      middlename: true,
+      _count: {
+        select: {
+          participatedGroups: { where: { tutorId } },
+          participatedCourses: { where: { tutorId } },
+        },
+      },
+    },
+  })
+}
+
+export async function addStudent({ groupId, studentId }: { groupId: number; studentId: number }) {
+  const group = await db.group.update({
+    where: {
+      id: groupId,
+    },
+    data: {
+      students: {
+        connect: {
+          id: studentId,
+        },
+      },
+    },
+  })
+  return group
+}
+
+export async function excludeStudent({ groupId, studentId }: { groupId: number; studentId: number }) {
+  const group = await db.group.update({
+    where: {
+      id: groupId,
+    },
+    data: {
+      students: {
+        disconnect: {
+          id: studentId,
+        },
+      },
+    },
+  })
+  return group
+}

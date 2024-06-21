@@ -1,4 +1,4 @@
-import { Attrs } from '@/tiptap'
+import { SelectOneAttrs } from '@/tiptap'
 import * as Popover from '@radix-ui/react-popover'
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react'
 import clsx from 'clsx'
@@ -8,9 +8,9 @@ import { z } from 'zod'
 
 type SelectOneProps = Omit<NodeViewProps, 'updateAttributes'> & {
   node: {
-    attrs: Attrs
+    attrs: SelectOneAttrs
   }
-  updateAttributes: (attrs: Partial<Attrs>) => void
+  updateAttributes: (attrs: Partial<SelectOneAttrs>) => void
 }
 
 const optionsToArraySchema = z.string().transform((options) => options.split(', '))
