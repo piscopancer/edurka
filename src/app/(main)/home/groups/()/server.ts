@@ -28,7 +28,7 @@ export async function queryCreatedGroups(tutorId: number, filter: GroupsPageFilt
           }
         : {}),
     },
-    select: { ...sharedSelect },
+    select: { ...sharedSelect, _count: { select: { participatedCourses: true } } },
   })
 }
 
@@ -101,6 +101,29 @@ export async function excludeStudent({ groupId, studentId }: { groupId: number; 
         },
       },
     },
+  })
+  return group
+}
+
+export async function deleteGroup({ groupId }: { groupId: number }) {
+  const group = await db.group.delete({
+    where: {
+      id: groupId,
+    },
+  })
+  return group
+}
+
+export async function createGroup({ tutorId, title, studentsIds }: { tutorId: number; title: string; studentsIds: number[] }) {
+  const group = await db.group.create({
+    data: {
+      title,
+      tutorId,
+      students: {
+        connect: studentsIds.map((id) => ({ id })),
+      },
+    },
+    select: { ...sharedSelect },
   })
   return group
 }

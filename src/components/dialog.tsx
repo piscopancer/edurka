@@ -48,7 +48,7 @@ export function Root({
                 className={clsx(
                   contentProps?.className,
                   contentProps?.size === 'sm' ? 'my-auto max-h-fit max-w-screen-sm max-md:mx-4' : 'my-4 max-w-screen-lg max-md:my-0',
-                  'fixed inset-0 z-[1] mx-auto flex flex-col rounded-xl border bg-zinc-200 @container',
+                  'fixed inset-0 z-[1] mx-auto flex flex-col rounded-xl border bg-zinc-200 shadow @container',
                 )}
               >
                 {content}

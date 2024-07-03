@@ -1,7 +1,7 @@
 'use client'
 
 import Search from '@/components/search'
-import BasicEditor from '@/components/tiptap/basic-editor'
+import GeneralEditor from '@/components/tiptap/editors/general-editor'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useAuthUser } from '@/query/hooks'
 import { formatDate } from '@/utils'
@@ -125,7 +125,7 @@ function CourseForm({ tutorId, ...props }: ComponentProps<'article'> & Pick<Cour
           </span>
         </label>
         {/* <textarea id={descriptionId} className='min-h-[3lh] w-full rounded-lg border px-4 py-2 shadow' /> */}
-        <BasicEditor />
+        <GeneralEditor editor={null} />
       </fieldset>
       <fieldset>
         <label htmlFor={findParicipantsId} className='mb-2 block'>
@@ -146,7 +146,7 @@ function CourseForm({ tutorId, ...props }: ComponentProps<'article'> & Pick<Cour
             createCourseStore.participantsSearch = ''
           }}
           loading={findParticipantsQuery.isFetching}
-          className='mb-4 mr-4'
+          className='mb-4'
         />
       </fieldset>
       <div className='mb-24 grid grid-cols-2 grid-rows-[auto,auto,1fr,auto] gap-x-4'>

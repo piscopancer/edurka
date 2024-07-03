@@ -122,6 +122,20 @@ export async function queryCreatedCourses(tutorId: number, filters: z.infer<type
           id: true,
         },
       },
+      tutor: {
+        select: {
+          id: true,
+          name: true,
+          surname: true,
+          middlename: true,
+        },
+      },
+      _count: {
+        select: {
+          students: true,
+          groups: true,
+        },
+      },
     },
   })
 }
@@ -158,6 +172,7 @@ export async function queryParticipatedCourses(studentId: number, filters: Cours
         select: {
           id: true,
           name: true,
+          surname: true,
           middlename: true,
         },
       },
@@ -166,6 +181,12 @@ export async function queryParticipatedCourses(studentId: number, filters: Cours
           id: true,
           title: true,
           createdAt: true,
+        },
+      },
+      _count: {
+        select: {
+          students: true,
+          groups: true,
         },
       },
     },
@@ -240,4 +261,13 @@ export async function createCourse(props: { tutorId: number; title: string; grou
   })
 
   return createdCourse
+}
+
+export async function deleteCourse({ courseId }: { courseId: number }) {
+  const course = await db.course.delete({
+    where: {
+      id: courseId,
+    },
+  })
+  return course
 }

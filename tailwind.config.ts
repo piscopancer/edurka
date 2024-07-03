@@ -14,8 +14,8 @@ export const config: Config = {
     }),
     extend: {
       colors: ({ colors }) => ({
-        accent: colors.sky[500],
-        'accent-dark': colors.sky[800],
+        accent: colors.indigo[500],
+        'accent-dark': colors.indigo[800],
       }),
       keyframes: {
         float: {

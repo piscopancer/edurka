@@ -18,6 +18,7 @@ export default function Search({ change, clear, defaultValue, loading, id, autoF
     <div className={clsx(props.className, 'hopper')}>
       <input
         autoFocus={autoFocus}
+        autoComplete='off'
         id={id}
         ref={inputRef}
         value={value}

@@ -34,7 +34,7 @@ export default function Header({ ...props }: ComponentProps<'header'>) {
   const qc = useQueryClient()
   const path = usePathname()
   const headerSnap = useSnapshot(headerStore)
-  const tutorModeQuery = useTutorMode()
+  const { data: tutorMode } = useTutorMode()
   const authUserQuery = useAuthUser()
   const toggleTutorMutation = useMutation({
     mutationFn: toggleTutor,
@@ -42,7 +42,7 @@ export default function Header({ ...props }: ComponentProps<'header'>) {
       qc.setQueryData<boolean>(queryKeys.tutorMode(authUserQuery.data?.id), data)
     },
   })
-  const routes = getRoutes({ tutorMode: !!tutorModeQuery.data })
+  const routes = getRoutes({ tutorMode: !!tutorMode })
   const notificationsQuery = useNotifications()
   const signOutMutation = useMutation({
     mutationFn: signOut,
@@ -97,11 +97,11 @@ export default function Header({ ...props }: ComponentProps<'header'>) {
           <button
             disabled={toggleTutorMutation.isPending}
             onClick={() => {
-              toggleTutorMutation.mutate(!tutorModeQuery.data)
+              toggleTutorMutation.mutate(!tutorMode)
             }}
-            className='flex items-center gap-x-2 rounded-full border border-transparent py-1 pl-4 pr-3 hover:border-inherit disabled:opacity-50'
+            className='flex items-center gap-x-2 rounded-full border border-transparent py-1 pl-4 pr-3 disabled:bg-halftone hover:border-inherit'
           >
-            {tutorModeQuery.data ? 'Tutor' : 'Student'}
+            {tutorMode ? 'Tutor' : 'Student'}
             {toggleTutorMutation.isPending ? <TbLoader className='animate-spin' /> : <TbSelector />}
           </button>
         )}
@@ -139,7 +139,7 @@ export default function Header({ ...props }: ComponentProps<'header'>) {
           <Popover.Trigger className='rounded-full border px-4 py-1'> {authUserQuery.data ? authUserQuery.data.name : 'Log in'}</Popover.Trigger>
         </Popover.Root>
       </div>
-      {routes.some(({ route }) => path.includes(route)) && (
+      {path.startsWith('/home') && (
         <nav className={clsx(props.className, 'flex px-4 pb-2')}>
           {routes.map((r) => (
             <Link key={r.route} href={r.route} className={clsx('relative rounded-lg border px-4 py-1', path.includes(r.route) ? 'border-inherit' : 'border-transparent')}>

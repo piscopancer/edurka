@@ -1,4 +1,4 @@
-import { SelectOneAttrs } from '@/tiptap'
+import { SelectOneAttrs } from '@/tiptap/extensions/select-one'
 import * as Popover from '@radix-ui/react-popover'
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react'
 import clsx from 'clsx'

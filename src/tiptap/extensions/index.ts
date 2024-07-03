@@ -7,80 +7,26 @@ import documentExtension from '@tiptap/extension-document'
 import hardBreakExtension from '@tiptap/extension-hard-break'
 import headingExtension from '@tiptap/extension-heading'
 import historyExtension from '@tiptap/extension-history'
+import linkExtension from '@tiptap/extension-link'
 import listItemExtension from '@tiptap/extension-list-item'
 import orderedListExtension from '@tiptap/extension-ordered-list'
 import paragraphExtension from '@tiptap/extension-paragraph'
 import textExtension from '@tiptap/extension-text'
 import textAlignExtension from '@tiptap/extension-text-align'
-import { Node, ReactNodeViewRenderer } from '@tiptap/react'
 import clsx from 'clsx'
-import SelectOne from './components/tiptap/select-one'
+import { Markdown as markdownExtension } from 'tiptap-markdown'
 
-export type SelectOneAttrs = {
-  options: string
-  correctAnswer: number
-}
-
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    selectOne: {
-      insertSelectOne: (attributes?: SelectOneAttrs) => ReturnType
-    }
+declare module '@tiptap/react' {
+  class Editor {
+    get storage(): { markdown: { getMarkdown: () => string } }
   }
 }
-
-export const selectOneExtension = Node.create({
-  name: 'selectOne',
-  group: 'inline',
-  exitable: true,
-  selectable: false,
-  inline: true,
-  addAttributes() {
-    return {
-      options: {
-        default: 'Option 1, Option 2',
-      },
-      correctAnswer: {
-        default: 0,
-      },
-    } satisfies { [K in keyof SelectOneAttrs]: { default: SelectOneAttrs[K] } }
-  },
-  parseHTML() {
-    return [
-      {
-        tag: 'select-one',
-      },
-    ]
-  },
-  renderHTML({ HTMLAttributes }) {
-    return ['select-one', mergeAttributes(HTMLAttributes)]
-  },
-  addCommands() {
-    return {
-      insertSelectOne:
-        (attrs) =>
-        ({ commands, tr }) => {
-          return commands.insertContent({
-            type: this.type.name,
-            attrs:
-              attrs ??
-              ({
-                correctAnswer: 0,
-                options: tr.doc.textBetween(tr.selection.from, tr.selection.to, ' ').trim(),
-              } satisfies SelectOneAttrs),
-          })
-        },
-    }
-  },
-  addNodeView() {
-    return ReactNodeViewRenderer(SelectOne, { className: 'inline-block' })
-  },
-})
 
 const headingLevels = [2, 3] as const
 
 const extensions = {
   doc: documentExtension,
+  markdown: markdownExtension,
   history: historyExtension,
   textAlign: textAlignExtension.configure({
     types: ['heading', 'paragraph'],
@@ -116,48 +62,85 @@ const extensions = {
     },
     addKeyboardShortcuts() {
       return {
-        'shift-alt-2': ({ editor }) => editor.commands.toggleHeading({ level: 2 satisfies (typeof headingLevels)[number] }),
-        'shift-alt-3': ({ editor }) => editor.commands.toggleHeading({ level: 3 satisfies (typeof headingLevels)[number] }),
+        'shift-alt-2': ({ editor }) => {
+          if (editor.can().toggleHeading({ level: 2 satisfies (typeof headingLevels)[number] })) {
+            return editor.commands.toggleHeading({ level: 2 satisfies (typeof headingLevels)[number] })
+          } else {
+            return false
+          }
+        },
+        'shift-alt-3': ({ editor }) => {
+          if (editor.can().toggleHeading({ level: 3 satisfies (typeof headingLevels)[number] })) {
+            return editor.commands.toggleHeading({ level: 3 satisfies (typeof headingLevels)[number] })
+          } else {
+            return false
+          }
+        },
       }
     },
   }),
-  parapgraph: paragraphExtension.configure({ HTMLAttributes: { class: 'align-middle not-[:first-child]:mt-4 not-[:last-child]:mb-4' } }),
+  parapgraph: paragraphExtension.configure({ HTMLAttributes: { class: 'not-[:first-child]:mt-4 not-[:last-child]:mb-4' } }),
   bold: boldExtension,
-  code: codeExtension
-    .configure({
-      HTMLAttributes: {
-        class: 'border rounded-lg px-1.5 font-mono inline-block text-sm',
-      },
-    })
-    .extend({
-      addKeyboardShortcuts() {
-        return {
-          'shift-alt-c': () => this.editor.commands.toggleCode(),
-        }
-      },
-    }),
+  code: codeExtension.configure({
+    HTMLAttributes: {
+      class: 'border rounded-lg px-1.5 font-mono inline-block text-sm',
+    },
+  }),
+  // .extend({
+  //   addKeyboardShortcuts() {
+  //     return {
+  //       check for can()
+  //       'shift-alt-c': () => this.editor.commands.toggleCode(),
+  //     }
+  //   },
+  // }),
   codeBlock: codeBlockExtension.configure({
     HTMLAttributes: { class: 'bg-zinc-900 rounded-md px-4 py-3 my-4 selection:bg-zinc-300 selection:text-zinc-900 text-sm *:!font-mono text-zinc-200' },
   }),
+  // .extend({
+  //   addKeyboardShortcuts() {
+  //     return {
+  //       'shift-alt-s': () => {
+  //         if (this.editor.can().toggleCodeBlock()) {
+  //           return this.editor.commands.toggleCodeBlock()
+  //         } else {
+  //           return false
+  //         }
+  //       },
+  //     }
+  //   },
+  // }),
   listItem: listItemExtension.configure({ HTMLAttributes: { class: '' } }),
-  bulletList: bulletListExtension.configure({ HTMLAttributes: { class: 'my-4 [&_li]:before:content-["->"] [&_li]:before:font-mono' } }),
+  bulletList: bulletListExtension.configure({
+    HTMLAttributes: {
+      class: clsx(
+        'not-[:first-child]:mt-4 not-[:last-child]:mb-4',
+        '[&_ul]:!my-0',
+        '[&_li]:grid-cols-[auto,1fr] [&_li]:grid [&_li]:grid-cols-[auto,1fr] [&_li]:gap-x-4 [&_li_*:not(:first-child)]:col-start-2',
+        '[&_li_*]:!my-0',
+        '[&_li]:before:content-["->"] [&_li]:before:font-mono',
+      ),
+    },
+  }),
   orderedList: orderedListExtension.configure({
     HTMLAttributes: {
       class: clsx(
         '[counter-reset:li] not-[:first-child]:mt-4 not-[:last-child]:mb-4',
-        ' [&_ol]:!my-0 [&_ol]:py-1',
-        '[&_li]:py-1 [&_li>*]:!my-0 [&_li]:grid [&_li]:grid-cols-[auto,1fr] [&_li]:gap-x-2 not-[:first-child]:col-start-2',
+        '[&_ol]:!my-0',
+        '[&_li]:my-2 [&_li]:last:!mb-0 [&_li>*]:!my-0 [&_li]:grid [&_li]:grid-cols-[auto,1fr] [&_li]:gap-x-2 [&_li_*:not(:first-child)]:col-start-2',
         '[&_li]:before:content-[counter(li)] [&_li]:before:[counter-increment:li] [&_li]:before:size-6 [&_li]:before:text-sm [&_li]:before:inline-flex [&_li]:before:items-center [&_li]:before:justify-center [&_li]:before:border [&_li]:before:border-zinc-900 [&_li]:before:rounded-lg [&_li]:before:border-dashed [&_li]:before:shrink-0',
       ),
     },
   }),
+  link: linkExtension,
 } satisfies Record<string, Extensions[number]>
 
-export const basicExtensions: Extensions = [
+export const generalExtensions = [
   extensions.history,
+  extensions.doc,
+  extensions.markdown,
   extensions.textAlign,
   extensions.hardBreak,
-  extensions.doc,
   extensions.parapgraph,
   extensions.codeBlock,
   extensions.bulletList,
@@ -167,6 +150,7 @@ export const basicExtensions: Extensions = [
   extensions.bold,
   extensions.code,
   extensions.text,
-]
+  extensions.link,
+] as const satisfies Extensions
 
 export const selectOneExtensions: Extensions = [extensions.doc, extensions.parapgraph, extensions.text, extensions.history, extensions.bold, extensions.code, extensions.hardBreak]

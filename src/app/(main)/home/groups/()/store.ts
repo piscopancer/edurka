@@ -14,3 +14,9 @@ export const groupStore = proxy<GroupStore>({
   tab: 'all-students',
   search: '',
 })
+
+export const groupCreatorStore = proxy<{ title: string; studentsSearch: string; studentsIds: number[] }>({
+  title: '',
+  studentsSearch: '',
+  studentsIds: [],
+})
